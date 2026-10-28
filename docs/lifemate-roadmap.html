@@ -1,0 +1,368 @@
+<title>LifeMate Roadmap</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&family=Patrick+Hand&display=swap">
+<style>
+/* Layout: timeline figure first, then phases as a numbered vertical sequence (the order is real); each phase = goal, tasks, deliverables, exit gate. */
+:root {
+  --bg: #f5f7fa;
+  --surface: #ffffff;
+  --ink: #18202e;
+  --muted: #5b6577;
+  --line: #d9dfe8;
+  --accent: #1f5fd1;
+  --accent-soft: #e4ecfb;
+  --warn: #b4530b;
+  --warn-soft: #fbecdf;
+  --good: #1d7a4f;
+  --good-soft: #e2f3ea;
+  --font-display: "Be Vietnam Pro", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Be Vietnam Pro", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #11151c; --surface: #181e28; --ink: #e6eaf1; --muted: #9aa5b8; --line: #2c3544;
+  --accent: #79a6ff; --accent-soft: #1d2a44; --warn: #f0a35e; --warn-soft: #3a2615; --good: #5fd19a; --good-soft: #15301f; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #11151c; --surface: #181e28; --ink: #e6eaf1; --muted: #9aa5b8; --line: #2c3544;
+  --accent: #79a6ff; --accent-soft: #1d2a44; --warn: #f0a35e; --warn-soft: #3a2615; --good: #5fd19a; --good-soft: #15301f; color-scheme: dark }
+
+body { background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 16px; line-height: 1.65; }
+.wrap { max-width: 980px; margin: 0 auto; padding-block: 40px 80px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+header { display: grid; gap: 10px; padding-bottom: 28px; border-bottom: 1px solid var(--line); margin-bottom: 32px; }
+.eyebrow { font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+h1 { font-family: var(--font-display); font-weight: 800; font-size: clamp(30px, 5vw, 44px); line-height: 1.12; margin: 0; text-wrap: balance; letter-spacing: -.01em; }
+h2 { font-family: var(--font-display); font-weight: 700; font-size: 24px; margin: 0; text-wrap: balance; }
+h3 { font-size: 16px; margin: 0 0 6px; font-weight: 700; }
+p { margin: 0 0 10px; }
+.lede { font-size: 18px; color: var(--muted); max-width: 760px; }
+code, .mono { font-family: var(--font-mono); font-size: .86em; }
+code { background: var(--accent-soft); padding: 1px 5px; border-radius: 4px; }
+ul, ol { margin: 0; padding-left: 20px; display: grid; gap: 5px; }
+li::marker { color: var(--muted); }
+
+figure { margin: 0 0 40px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 16px; }
+.figscroll { overflow-x: auto; }
+figure svg { display: block; width: 100%; min-width: 720px; height: auto; color: var(--ink); }
+figcaption { font-size: 14px; color: var(--muted); margin-top: 10px; }
+
+.principles { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 380px), 1fr)); gap: 14px 28px; margin-bottom: 44px; }
+.principles div { font-size: 15px; }
+.principles b { display: block; }
+
+.phase { display: grid; grid-template-columns: 64px 1fr; gap: 0 18px; padding: 26px 0; border-top: 1px solid var(--line); }
+.phase > .num { font-family: var(--font-display); font-weight: 800; font-size: 34px; line-height: 1; color: var(--accent); }
+.phase > .body { min-width: 0; display: grid; gap: 14px; }
+.phase .meta { font-size: 13px; color: var(--muted); font-weight: 600; letter-spacing: .04em; }
+.phase.key > .num { color: var(--warn); }
+.phase .why { font-size: 16px; max-width: 760px; }
+.grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 18px 28px; }
+.grid2 > * { min-width: 0; }
+.sub { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; font-size: 15px; }
+.sub h3 { display: flex; gap: 8px; align-items: baseline; }
+.sub h3 .id { font-family: var(--font-mono); font-size: 12px; color: var(--accent); font-weight: 600; }
+.sub ul { font-size: 14.5px; }
+.out { font-size: 14px; color: var(--muted); margin-top: 8px; }
+.out::before { content: "Đầu ra: "; font-weight: 600; color: var(--ink); }
+.gate { background: var(--good-soft); border-radius: 8px; padding: 10px 14px; font-size: 14.5px; }
+.gate::before { content: "Cổng qua giai đoạn  "; font-weight: 700; color: var(--good); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; display: block; }
+.risk { background: var(--warn-soft); border-radius: 8px; padding: 10px 14px; font-size: 14.5px; }
+.risk::before { content: "Bẫy cần tránh  "; font-weight: 700; color: var(--warn); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; display: block; }
+
+.tbl { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-size: 14.5px; }
+th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); font-weight: 600; background: var(--bg); }
+tr:last-child td { border-bottom: 0; }
+td.num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+.tax { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 8px; }
+.tax div { border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; font-size: 14px; background: var(--surface); }
+.tax b { display: block; font-size: 14px; }
+.tax span { color: var(--muted); font-size: 13px; }
+footer { font-size: 13px; color: var(--muted); border-top: 1px solid var(--line); padding-top: 16px; margin-top: 20px; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+</style>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">Zalo AI Challenge 2026 · LifeMate · Artifact 2/2</div>
+  <h1>Lộ trình: hiểu dữ liệu trước, rồi xử lý, baseline và nâng cấp</h1>
+  <p class="lede">Hôm nay 28/10. Còn 19 ngày tới hạn nộp Docker (16/11, 23:59). Mỗi giai đoạn có một cổng qua: chưa đạt cổng thì không sang bước sau, vì mọi cải tiến phía sau đều cần thước đo phía trước.</p>
+</header>
+
+<figure>
+  <div class="figscroll">
+  <svg viewBox="0 0 960 340" role="img" aria-label="Lịch trình từ 28/10 đến 23/11: harness, hiểu dữ liệu, xử lý, baseline, nâng cấp I, nâng cấp II, đóng gói Docker trước hạn 16/11, chạy private 20 đến 23/11." font-family="Patrick Hand, Comic Sans MS, cursive" font-size="15">
+    <g stroke="currentColor" stroke-opacity=".18" stroke-width="1">
+      <line x1="210" y1="30" x2="210" y2="300"/><line x1="318" y1="30" x2="318" y2="300"/><line x1="426" y1="30" x2="426" y2="300"/>
+      <line x1="534" y1="30" x2="534" y2="300"/><line x1="642" y1="30" x2="642" y2="300"/><line x1="858" y1="30" x2="858" y2="300"/>
+    </g>
+    <g fill="currentColor" font-size="13" text-anchor="middle">
+      <text x="210" y="320">28/10</text><text x="318" y="320">1/11</text><text x="426" y="320">5/11</text>
+      <text x="534" y="320">9/11</text><text x="642" y="320">13/11</text><text x="858" y="320">21/11</text>
+    </g>
+    <g fill="currentColor" text-anchor="end">
+      <text x="196" y="55">0 · Harness chấm điểm</text>
+      <text x="196" y="87">1 · Hiểu dữ liệu</text>
+      <text x="196" y="119">2 · Xử lý dữ liệu</text>
+      <text x="196" y="151">3 · Baseline B0/B1/B2</text>
+      <text x="196" y="183">4 · Nâng cấp I (ASR, SFT)</text>
+      <text x="196" y="215">5 · Nâng cấp II (DPO, RL)</text>
+      <text x="196" y="247">6 · Docker + diễn tập</text>
+      <text x="196" y="279">7 · Chạy private test</text>
+    </g>
+    <g fill="currentColor" fill-opacity=".14" stroke="currentColor" stroke-width="1.5">
+      <rect x="210" y="40" width="81" height="20" rx="5"/>
+      <rect x="318" y="104" width="135" height="20" rx="5"/>
+      <rect x="372" y="136" width="135" height="20" rx="5"/>
+      <rect x="453" y="168" width="189" height="20" rx="5"/>
+      <rect x="561" y="200" width="135" height="20" rx="5"/>
+      <rect x="642" y="232" width="108" height="20" rx="5"/>
+      <rect x="831" y="264" width="108" height="20" rx="5"/>
+    </g>
+    <rect x="237" y="72" width="162" height="20" rx="5" fill="#d9701e" fill-opacity=".25" stroke="#d9701e" stroke-width="2"/>
+    <line x1="750" y1="24" x2="750" y2="300" stroke="#d9701e" stroke-width="2.2" stroke-dasharray="6 4"/>
+    <text x="756" y="38" fill="#d9701e" font-size="14">16/11 nộp Docker</text>
+    <line x1="831" y1="24" x2="831" y2="300" stroke="currentColor" stroke-width="1.4" stroke-dasharray="3 4"/>
+    <text x="837" y="58" fill="currentColor" font-size="13">20/11 ra private</text>
+    <text x="405" y="87" fill="currentColor" font-size="13">ưu tiên cao nhất</text>
+    <text x="553" y="215" fill="currentColor" font-size="13" text-anchor="end">chỉ khi còn thời gian</text>
+  </svg>
+  </div>
+  <figcaption>Các giai đoạn chồng nhau có chủ ý: harness và hiểu dữ liệu chạy song song; baseline bắt đầu khi phần xử lý ASR và history đã dùng được. Mốc ngày là đề xuất, điều chỉnh theo số người trong đội.</figcaption>
+</figure>
+
+<div class="principles">
+  <div><b>Đo trước, sửa sau.</b>Không có scorer cục bộ thì không biết thay đổi nào giúp điểm.</div>
+  <div><b>Nghe trước, mô hình sau.</b>Giọng thật khó nghe là rủi ro lớn nhất mà số liệu thống kê không cho thấy.</div>
+  <div><b>Khử nhiễu từng tầng.</b>Tách lỗi ASR khỏi lỗi agent bằng cách chạy agent trên transcript chuẩn (B0) và transcript ASR (B1).</div>
+  <div><b>Tối ưu cho app chưa thấy.</b>65% mẫu public có app không có trong train. Validation phải mô phỏng điều đó.</div>
+</div>
+
+<section class="phase">
+  <div class="num">0</div>
+  <div class="body">
+    <div class="meta">28/10 đến 30/10 · NỀN MÓNG</div>
+    <h2>Harness: scorer, replay, chia validation</h2>
+    <p class="why">Viết lại công thức chấm điểm bằng Python và chạy được trên train ngay từ ngày đầu.</p>
+    <div class="grid2">
+      <div><h3>Việc cần làm</h3><ul>
+        <li><code>score(pred_calls, pred_hash, gold_calls, gold_hash)</code>: cổng hash, khớp call theo tên + arg thường giống hệt + arg fuzzy token-F1 &gt; 0.6, ghép cặp 1-1, công thức F1.</li>
+        <li>Gold hash của train: replay <code>label.tool_calls</code> trong ToolEnv rồi lấy hash (đã thử: 1.545/1.545 khớp final_state).</li>
+        <li>Validator file nộp: đủ dòng, đúng id, UTF-8, chạy <span class="mono">python -m zaic_tools --validate</span>.</li>
+        <li>Chia validation: (a) ngẫu nhiên phân tầng theo loại nhãn; (b) <b>leave-app-out</b>: giữ 8 đến 10 app khỏi train để mô phỏng app mới.</li>
+      </ul></div>
+      <div><h3>Kiểm thử scorer</h3><ul>
+        <li>Gold chấm gold = 100.</li>
+        <li>Thêm 1 call đọc thừa → 0.857 ở mẫu 3 call.</li>
+        <li>Đổi 1 ID → 0. Nộp rỗng ở mẫu gold rỗng → 1.</li>
+        <li>Một submission "luôn rỗng" cho điểm sàn (~7.2 trên train).</li>
+      </ul></div>
+    </div>
+    <div class="gate">Scorer qua toàn bộ test trên; mỗi lần chạy thử in được điểm tổng và điểm theo từng nhóm.</div>
+  </div>
+</section>
+
+<section class="phase key">
+  <div class="num">1</div>
+  <div class="body">
+    <div class="meta">29/10 đến 3/11 · ƯU TIÊN CAO NHẤT</div>
+    <h2>Hiểu dữ liệu</h2>
+    <p class="why">Mục tiêu: trước khi chọn model, biết rõ dữ liệu trông thế nào, khó ở đâu và những lỗi nào có thể xảy ra. Kết quả của giai đoạn này là bản đồ lỗi, dùng để chia nhóm đánh giá cho mọi giai đoạn sau.</p>
+    <div class="grid2">
+      <div class="sub"><h3><span class="id">1.1</span>Nghe audio có phương pháp</h3><ul>
+        <li>Chọn 120 clip phân tầng: theo độ dài (1,7 đến 22,3 s), số lượt history, loại nhãn, có số tiền / giờ / tên.</li>
+        <li>Mỗi clip ghi: vùng miền, độ tuổi ước đoán, nhiễu nền, tốc độ nói, từ nghe sai, có tự sửa lời không.</li>
+        <li>Nghe song song transcript <span class="mono">audio_text</span> để đánh dấu chỗ người nghe cũng khó.</li>
+        <li>Nghe thêm 50 clip public test (không có transcript) để kiểm tra phân phối giọng có giống train.</li>
+      </ul><div class="out">bảng nghe 170 dòng, danh sách "audio khó".</div></div>
+      <div class="sub"><h3><span class="id">1.2</span>Đo ASR trên toàn bộ train</h3><ul>
+        <li>Chạy 2 đến 3 ASR (PhoWhisper-large, Whisper large-v3, turbo) trên 5.036 câu có transcript.</li>
+        <li>Đo WER, CER và <b>lỗi thực thể</b>: số tiền, giờ / ngày, tên người, tên thiết bị, địa chỉ.</li>
+        <li>Xếp clip theo WER, nghe 50 clip tệ nhất: lỗi do giọng, nhiễu, hay từ tiếng Anh ("book", "AC")?</li>
+        <li>Đo thời gian chạy mỗi clip để biết ngân sách Docker.</li>
+      </ul><div class="out">bảng WER theo model và theo nhóm, ASR được chọn tạm thời.</div></div>
+      <div class="sub"><h3><span class="id">1.3</span>Giải phẫu nhãn</h3><ul>
+        <li>Phân loại: hành động / đọc để trả lời (124 mẫu không đổi state) / đọc rồi hỏi / hỏi ngay / rỗng.</li>
+        <li>Mẫu read-write: RW (258), W (212), RWW (150), R? (68)... Khi nào gold đọc trước, khi nào ghi thẳng?</li>
+        <li>Quy ước arg của gold: read gọi với <code>{}</code>, <span class="mono">contacts.search</span> dùng tên như người nói, giờ ISO có <span class="mono">+07:00</span>.</li>
+        <li>Khi nào ID đã có sẵn trong <span class="mono">tool_results</span> của history nên không cần đọc lại.</li>
+      </ul><div class="out">tài liệu "phong cách gold" gồm các quy tắc kèm số đếm.</div></div>
+      <div class="sub"><h3><span class="id">1.4</span>Taxonomy tình huống</h3><ul>
+        <li>Gắn nhãn mọi mẫu train theo các nhóm bên dưới: LLM gắn trước, người kiểm 200 mẫu.</li>
+        <li>Một mẫu có thể thuộc nhiều nhóm.</li>
+        <li>Đọc kỹ 10 mẫu mỗi nhóm, ghi cách gold xử lý.</li>
+      </ul><div class="out">file <span class="mono">tags.jsonl</span>, dùng làm slice đánh giá.</div></div>
+      <div class="sub"><h3><span class="id">1.5</span>Schema và môi trường</h3><ul>
+        <li>So catalog train và public: 11 app mới, các tham số <span class="mono">x-ref</span>, <span class="mono">x-one-of</span>, fuzzy, enum.</li>
+        <li>Đọc mã <span class="mono">zaic_tools/apps/*.py</span> (được phép, khác với đọc state.json): khi nào trả <span class="mono">done: false</span>, tìm kiếm khớp mờ ra sao.</li>
+        <li>Thử thủ công trên train: gọi sai ID, sai kiểu, thiếu tham số; ghi lại thông báo.</li>
+      </ul><div class="out">ghi chú hành vi từng app, danh sách lỗi im lặng.</div></div>
+      <div class="sub"><h3><span class="id">1.6</span>History và ngữ cảnh</h3><ul>
+        <li>66% mẫu có history, tới 24 lượt. Ở test, lượt user cũ chỉ có audio.</li>
+        <li>Đo bao nhiêu mẫu cần thông tin từ history (ID, tên, đối tượng "cái còn lại").</li>
+        <li>Ước lượng độ dài prompt sau khi ghép schema + history để chọn context window.</li>
+      </ul><div class="out">quyết định cách nén history.</div></div>
+    </div>
+
+    <h3>Taxonomy khởi điểm (số đếm thô bằng regex trên train, cần gắn lại chính xác)</h3>
+    <div class="tax">
+      <div><b>Nhiều hành động</b><span>"... rồi trả tiền nước, xong lưu ghi chú" · ~563</span></div>
+      <div><b>Thời gian tương đối</b><span>"6 rưỡi sáng mai", "thứ 6 tuần sau" · ~492</span></div>
+      <div><b>Từ đệm, gọi tên</b><span>"Ờ", "Chị ơi", "nha" · ~248</span></div>
+      <div><b>Số tiền</b><span>"500 nghìn", "nửa triệu" · ~184</span></div>
+      <div><b>Tự sửa / đổi ý</b><span>"mười hai ngàn đi, à không, cao quá" · ~109</span></div>
+      <div><b>Điều kiện</b><span>"nếu mai mưa thì huỷ..." · ~103</span></div>
+      <div><b>Phủ định</b><span>"đừng tắt đèn bếp" → rỗng · ~36</span></div>
+      <div><b>Tham chiếu history</b><span>"cái còn lại", "lúc nãy" · ~27</span></div>
+      <div><b>Mơ hồ thực thể</b><span>nhiều "Minh" → hỏi <span class="mono">contact_id</span> · 73</span></div>
+      <div><b>Ngoài phạm vi</b><span>"đặt khách sạn" khi không có app</span></div>
+      <div><b>Gộp, lặp lại</b><span>đọc 5 ngày hoạt động rồi lấy max</span></div>
+      <div><b>App chưa thấy</b><span>chỉ có ở public: stocks, parking...</span></div>
+    </div>
+    <div class="gate">Có bảng WER theo ASR, bảng nghe, tags.jsonl cho mọi mẫu train và tài liệu phong cách gold. Trả lời được: "lỗi nào sẽ làm mất điểm nhiều nhất?"</div>
+  </div>
+</section>
+
+<section class="phase">
+  <div class="num">2</div>
+  <div class="body">
+    <div class="meta">1/11 đến 5/11</div>
+    <h2>Xử lý dữ liệu</h2>
+    <div class="grid2">
+      <div class="sub"><h3><span class="id">2.1</span>Audio → transcript</h3><ul>
+        <li>Kiểm tra định dạng (16 kHz mono), chuẩn hóa âm lượng, cắt khoảng lặng (VAD) chỉ khi đo thấy WER giảm.</li>
+        <li>Nhận dạng cả lượt user trong history.</li>
+        <li>Prompt / hotword cho ASR từ ngữ cảnh: tên trong profile, tên thiết bị và app xuất hiện trong history.</li>
+      </ul></div>
+      <div class="sub"><h3><span class="id">2.2</span>Chuẩn hóa văn bản</h3><ul>
+        <li>Số và tiền: "năm trăm nghìn", "nửa triệu", "2 trăm rưỡi" → số nguyên.</li>
+        <li>Giờ và ngày: "6 rưỡi", "chiều mai", "thứ 6 tuần sau" → ISO theo <span class="mono">current_time</span>.</li>
+        <li>Viết thành hàm có unit test; cho LLM thấy cả bản gốc và bản chuẩn hóa.</li>
+      </ul></div>
+      <div class="sub"><h3><span class="id">2.3</span>Đóng gói ngữ cảnh</h3><ul>
+        <li>Chỉ schema của app đã cài + <span class="mono">sys.ask_missing_info</span>, dạng gọn.</li>
+        <li>History thành hội thoại: user (ASR), assistant text, tool_calls và tool_results rút gọn nhưng giữ ID.</li>
+        <li>Context: giờ hiện tại kèm thứ trong tuần, địa chỉ nhà / công ty, thành phố.</li>
+      </ul></div>
+      <div class="sub"><h3><span class="id">2.4</span>Dữ liệu huấn luyện</h3><ul>
+        <li>Chuyển mỗi mẫu train thành trajectory nhiều bước: prompt → call → kết quả thật từ replay → call tiếp → kết thúc.</li>
+        <li>Hai phiên bản input: transcript chuẩn và transcript ASR (học chịu lỗi ASR).</li>
+        <li>Không sửa nhãn gold khi chưa chứng minh nhãn sai.</li>
+      </ul></div>
+    </div>
+    <div class="gate">Một hàm <span class="mono">build_prompt(sample)</span> chạy được trên mọi mẫu train và public; bộ chuẩn hóa qua unit test; dữ liệu SFT đã sinh và replay khớp.</div>
+  </div>
+</section>
+
+<section class="phase">
+  <div class="num">3</div>
+  <div class="body">
+    <div class="meta">3/11 đến 7/11</div>
+    <h2>Baseline: ba phiên bản để tách nguồn lỗi</h2>
+    <div class="tbl">
+    <table>
+      <thead><tr><th>Bản</th><th>Input</th><th>Agent</th><th>Trả lời câu hỏi</th></tr></thead>
+      <tbody>
+        <tr><td class="num">B0</td><td>Transcript chuẩn (chỉ có ở train)</td><td>LLM prompt + vòng lặp tool</td><td>Trần điểm của agent khi ASR hoàn hảo</td></tr>
+        <tr><td class="num">B1</td><td>Transcript ASR</td><td>như B0</td><td>B0 trừ B1 = điểm mất do ASR</td></tr>
+        <tr><td class="num">B2</td><td>Transcript ASR</td><td>+ validate trước mỗi call, kiểm <span class="mono">done</span>, giới hạn bước, chặn call lặp, few-shot lấy từ train theo độ tương tự</td><td>Giá trị của lớp kiểm soát thực thi</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <div class="grid2">
+      <div><h3>Vòng lặp agent</h3><ol>
+        <li>LLM sinh call tiếp theo hoặc quyết định dừng / hỏi / không làm.</li>
+        <li><code>env.validate()</code>: sai thì LLM sửa, chưa gọi <code>call()</code>.</li>
+        <li><code>env.call()</code>, đưa kết quả về LLM.</li>
+        <li>Dừng khi xong, sau tối đa 8 bước, hoặc khi gặp call trùng.</li>
+      </ol></div>
+      <div><h3>Báo cáo mỗi lần chạy</h3><ul>
+        <li>Điểm chính thức + tỷ lệ hash khớp + P, R trung bình.</li>
+        <li>Điểm theo từng nhóm taxonomy và theo app thấy / chưa thấy.</li>
+        <li>20 mẫu tệ nhất kèm trajectory để đọc tay.</li>
+      </ul></div>
+    </div>
+    <div class="risk">Không tạo ToolEnv thứ hai để "thử trước" lúc inference, không đọc state.json. Cả hai đều vi phạm luật. Self-consistency chỉ được làm trên kế hoạch dạng text.</div>
+    <div class="gate">Nộp B2 lên public leaderboard; điểm local và public chênh nhau không quá vài điểm (nếu chênh nhiều, validation chưa đại diện).</div>
+  </div>
+</section>
+
+<section class="phase">
+  <div class="num">4</div>
+  <div class="body">
+    <div class="meta">6/11 đến 12/11</div>
+    <h2>Nâng cấp I: sửa đúng chỗ đang mất điểm</h2>
+    <p class="why">Chọn việc theo bảng lỗi của B2, không theo thứ tự cố định. Mỗi thay đổi đo riêng, giữ lại nếu tăng điểm trên cả hai kiểu validation.</p>
+    <div class="grid2">
+      <div class="sub"><h3><span class="id">4.1</span>Nếu ASR là nút thắt (B0 trừ B1 lớn)</h3><ul>
+        <li>Fine-tune ASR bằng LoRA trên ~5.000 câu train có transcript.</li>
+        <li>Sinh N-best, để LLM chọn bản hợp lý với ngữ cảnh.</li>
+        <li>Thêm hotword từ profile và history.</li>
+      </ul></div>
+      <div class="sub"><h3><span class="id">4.2</span>Nếu agent là nút thắt (B0 thấp)</h3><ul>
+        <li>Thêm quy tắc từ tài liệu phong cách gold vào prompt.</li>
+        <li>SFT LoRA trên trajectory nhiều bước, input có cả transcript ASR.</li>
+        <li>Xáo thứ tự tool, đổi tên app trong prompt khi train để model đọc schema thay vì nhớ.</li>
+      </ul></div>
+      <div class="sub"><h3><span class="id">4.3</span>Cho app chưa thấy</h3><ul>
+        <li>Dùng LLM lớn làm teacher sinh yêu cầu cho 11 app mới của public dựa vào schema.</li>
+        <li>Chỉ giữ mẫu tổng hợp khi chạy được trên env và kết quả hợp lý (chạy trên state tự tạo, không dùng state test).</li>
+        <li>Đo riêng trên leave-app-out.</li>
+      </ul></div>
+      <div class="sub"><h3><span class="id">4.4</span>Hỏi thêm và rỗng</h3><ul>
+        <li>Bộ phân loại quyết định trước: làm / hỏi / rỗng.</li>
+        <li>Ma trận nhầm lẫn giữa ba lớp, tối ưu ngưỡng theo điểm chính thức.</li>
+      </ul></div>
+    </div>
+    <div class="gate">Mỗi thay đổi có số đo trước và sau. Bản tốt nhất được nộp public và đóng băng làm ứng viên Docker.</div>
+  </div>
+</section>
+
+<section class="phase">
+  <div class="num">5</div>
+  <div class="body">
+    <div class="meta">10/11 đến 14/11 · CHỈ KHI CÒN THỜI GIAN</div>
+    <h2>Nâng cấp II: preference và RL</h2>
+    <div class="grid2">
+      <div><h3>Vì sao hợp lý ở bài này</h3><ul>
+        <li>Env tất định, replay khớp 100%, nên reward = điểm chính thức tính được chính xác trên train.</li>
+        <li>Lỗi chủ yếu là lỗi rời rạc (sai ID, gọi thừa), hợp với so sánh cặp tốt / xấu.</li>
+      </ul></div>
+      <div><h3>Thứ tự thử</h3><ol>
+        <li>Rejection sampling: sinh K trajectory trên train, giữ bản điểm 1.0, SFT thêm.</li>
+        <li>DPO: cặp (điểm cao, điểm thấp) cùng prompt.</li>
+        <li>GRPO với reward là điểm chính thức, phạt nhẹ call bị từ chối.</li>
+      </ol></div>
+    </div>
+    <div class="risk">Reward hacking: model học cách trả rỗng hoặc hỏi lại để tránh rủi ro. Theo dõi tỷ lệ mỗi lớp hành động trước và sau. Thời gian còn ít, đừng đổi bản Docker sang model RL nếu chưa thắng rõ trên cả hai validation.</div>
+  </div>
+</section>
+
+<section class="phase">
+  <div class="num">6</div>
+  <div class="body">
+    <div class="meta">13/11 đến 16/11 23:59 · HẠN CỨNG</div>
+    <h2>Docker và diễn tập</h2>
+    <ul>
+      <li>Trọng số model nằm trong image, chạy offline; nhiệt độ 0 và seed cố định để kết quả lặp lại được.</li>
+      <li>Chạy toàn bộ public test bên trong Docker trên máy sạch; so file nộp với bản chạy ngoài.</li>
+      <li>Đo thời gian và VRAM; phải xong 600 mẫu trong giới hạn BTC đặt ra (cần hỏi BTC).</li>
+      <li>Có code train, code inference, dữ liệu tổng hợp; checksum và link Google Drive công khai.</li>
+    </ul>
+    <div class="gate">Docker sinh ra submission giống hệt bản đã nộp public, trong thời gian cho phép.</div>
+  </div>
+</section>
+
+<section class="phase">
+  <div class="num">7</div>
+  <div class="body">
+    <div class="meta">20/11 9:00 đến 23/11 23:59</div>
+    <h2>Chạy private test</h2>
+    <p>Chạy đúng Docker đã nộp. Kiểm tra file bằng validator trước khi nộp. Không chỉnh code sau khi đóng băng.</p>
+  </div>
+</section>
+
+<footer>Số đếm lấy từ train của gói dữ liệu v3.2.0 (chạy script cục bộ). Các số có dấu "~" là đếm thô bằng regex. Lựa chọn model và mốc ngày là đề xuất. Xem Artifact 1 cho cách chấm điểm và tech stack.</footer>
+</div>

@@ -1,0 +1,302 @@
+<title>LifeMate Brief</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&family=Patrick+Hand&display=swap">
+<style>
+/* Layout: one reading column (~760px) with wide figures/tables breaking out to 980px; sections separated by space, not cards. */
+:root {
+  --bg: #f5f7fa;
+  --surface: #ffffff;
+  --ink: #18202e;
+  --muted: #5b6577;
+  --line: #d9dfe8;
+  --accent: #1f5fd1;
+  --accent-soft: #e4ecfb;
+  --warn: #b4530b;
+  --warn-soft: #fbecdf;
+  --good: #1d7a4f;
+  --font-display: "Be Vietnam Pro", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Be Vietnam Pro", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+  --font-hand: "Patrick Hand", "Comic Sans MS", cursive;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #11151c; --surface: #181e28; --ink: #e6eaf1; --muted: #9aa5b8; --line: #2c3544;
+  --accent: #79a6ff; --accent-soft: #1d2a44; --warn: #f0a35e; --warn-soft: #3a2615; --good: #5fd19a; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #11151c; --surface: #181e28; --ink: #e6eaf1; --muted: #9aa5b8; --line: #2c3544;
+  --accent: #79a6ff; --accent-soft: #1d2a44; --warn: #f0a35e; --warn-soft: #3a2615; --good: #5fd19a; color-scheme: dark }
+
+body { background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 16px; line-height: 1.65; }
+.wrap { max-width: 980px; margin: 0 auto; padding-block: 40px 80px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.col { max-width: 760px; }
+header { display: grid; gap: 10px; padding-bottom: 28px; border-bottom: 1px solid var(--line); margin-bottom: 36px; }
+.eyebrow { font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+h1 { font-family: var(--font-display); font-weight: 800; font-size: clamp(30px, 5vw, 44px); line-height: 1.12; margin: 0; text-wrap: balance; letter-spacing: -.01em; }
+h2 { font-family: var(--font-display); font-weight: 700; font-size: 24px; margin: 0 0 12px; text-wrap: balance; }
+h3 { font-size: 17px; margin: 0 0 6px; font-weight: 700; }
+p { margin: 0 0 12px; }
+.lede { font-size: 18px; color: var(--muted); max-width: 760px; }
+section { display: grid; gap: 14px; margin-bottom: 52px; }
+code, .mono { font-family: var(--font-mono); font-size: .86em; }
+code { background: var(--accent-soft); padding: 1px 5px; border-radius: 4px; }
+.tag { display: inline-block; font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); }
+.tag.v { color: var(--good); border-color: currentColor; }
+.tag.p { color: var(--warn); border-color: currentColor; }
+
+figure { margin: 6px 0 0; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 16px; }
+.figscroll { overflow-x: auto; }
+figure svg { display: block; width: 100%; min-width: 720px; height: auto; color: var(--ink); }
+figcaption { font-size: 14px; color: var(--muted); margin-top: 10px; }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+.stat { background: var(--surface); padding: 14px 16px; display: grid; gap: 2px; align-content: start; }
+.stat b { font-size: 26px; font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1.2; }
+.stat span { font-size: 13px; color: var(--muted); }
+.stat.hot b { color: var(--warn); }
+
+.tbl { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-size: 14.5px; }
+th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); font-weight: 600; background: var(--bg); }
+tr:last-child td { border-bottom: 0; }
+td.num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+td.zero { color: var(--warn); font-weight: 700; }
+
+.formula { font-family: var(--font-mono); font-size: 14px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; overflow-x: auto; white-space: pre-wrap; line-height: 1.7; }
+
+.hard { display: grid; gap: 0; border-top: 1px solid var(--line); }
+.hard > div { display: grid; grid-template-columns: 44px 1fr; gap: 4px 14px; padding: 16px 0; border-bottom: 1px solid var(--line); }
+.hard .n { font-family: var(--font-display); font-weight: 800; font-size: 22px; color: var(--accent); line-height: 1.2; }
+.hard p { margin: 0; color: var(--ink); }
+.hard .ev { font-size: 14px; color: var(--muted); grid-column: 2; }
+.hard .fix { font-size: 14px; grid-column: 2; }
+.hard .fix::before { content: "Hướng xử lý: "; font-weight: 600; }
+
+.callout { border-left: 3px solid var(--warn); background: var(--warn-soft); padding: 12px 16px; border-radius: 0 8px 8px 0; font-size: 15px; }
+.callout.blue { border-left-color: var(--accent); background: var(--accent-soft); }
+ul { margin: 0; padding-left: 20px; display: grid; gap: 6px; }
+.two { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+.two > * { min-width: 0; }
+.vocab { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px 24px; font-size: 14.5px; }
+.vocab b { font-family: var(--font-mono); font-size: 13px; color: var(--accent); display: block; }
+footer { font-size: 13px; color: var(--muted); border-top: 1px solid var(--line); padding-top: 16px; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+</style>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">Zalo AI Challenge 2026 · LifeMate · Artifact 1/2</div>
+  <h1>Bài toán, cách chấm, khó khăn và tech stack</h1>
+  <p class="lede">Agent nghe một yêu cầu tiếng Việt, rồi gọi đúng chuỗi tool trên các app mô phỏng để đưa dữ liệu về đúng trạng thái người dùng muốn. Agent được chấm bằng việc nó làm, không phải câu nó nói.</p>
+  <div><span class="tag v">Đã kiểm chứng</span> = chạy script trên gói dữ liệu v3.2.0 tại máy. <span class="tag p">Đề xuất</span> = lựa chọn kỹ thuật, cần đo lại.</div>
+</header>
+
+<section>
+  <h2>1. Input → Output trong một hình</h2>
+  <div class="col">
+    <p>Mỗi mẫu có một <code>ToolEnv</code> riêng, tạo đúng một lần. Mọi <code>env.call()</code>, kể cả lời gọi bị từ chối vì sai schema, đều vào log và vào bài nộp. <code>env.validate()</code> chỉ kiểm schema, không chạy và <b>không ghi log</b> (đã đọc trong <span class="mono">zaic_tools/executor.py</span>), nên dùng nó trước mỗi lời gọi là miễn phí.</p>
+  </div>
+  <figure>
+    <div class="figscroll">
+    <svg viewBox="0 0 960 350" role="img" aria-label="Luồng: audio qua ASR thành transcript, cùng context, schema và history vào LLM agent; agent gọi ToolEnv và nhận kết quả; ToolEnv sinh call log và state hash; bộ chấm kiểm hash trước, rồi tính F1 trên các lời gọi." font-family="Patrick Hand, Comic Sans MS, cursive" font-size="15">
+      <defs>
+        <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="currentColor"/></marker>
+        <marker id="arA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#d9701e"/></marker>
+      </defs>
+      <g fill="none" stroke="currentColor" stroke-width="1.6">
+        <rect x="20" y="30" width="190" height="50" rx="8"/>
+        <rect x="20" y="105" width="190" height="50" rx="8"/>
+        <rect x="20" y="180" width="190" height="50" rx="8"/>
+        <rect x="20" y="255" width="190" height="50" rx="8"/>
+        <rect x="270" y="30" width="170" height="56" rx="8"/>
+        <rect x="270" y="150" width="190" height="120" rx="10" stroke-width="2.2"/>
+        <rect x="560" y="150" width="170" height="120" rx="10"/>
+        <rect x="790" y="40" width="150" height="50" rx="8"/>
+        <rect x="790" y="140" width="150" height="50" rx="8"/>
+      </g>
+      <rect x="790" y="250" width="150" height="70" rx="8" fill="none" stroke="#d9701e" stroke-width="2.2"/>
+      <g fill="currentColor" text-anchor="middle">
+        <text x="115" y="52">audio .wav</text><text x="115" y="70" font-size="13">lượt cuối + lượt user cũ</text>
+        <text x="115" y="127">context</text><text x="115" y="145" font-size="13">giờ, vị trí, profile</text>
+        <text x="115" y="202">installed_apps</text><text x="115" y="220" font-size="13">→ schema tool được phép</text>
+        <text x="115" y="277">history</text><text x="115" y="295" font-size="13">text + tool_results (ID!)</text>
+        <text x="355" y="55">ASR</text><text x="355" y="74" font-size="13">tiếng Việt 3 miền</text>
+        <text x="365" y="180" font-size="17">LLM agent</text>
+        <text x="365" y="204" font-size="13">lập kế hoạch</text>
+        <text x="365" y="222" font-size="13">chọn tool + args</text>
+        <text x="365" y="240" font-size="13">làm / hỏi / bỏ qua</text>
+        <text x="645" y="185" font-size="17">ToolEnv</text>
+        <text x="645" y="208" font-size="13">1 phiên / mẫu</text>
+        <text x="645" y="226" font-size="13">state trong bộ nhớ</text>
+        <text x="645" y="244" font-size="13">không reset</text>
+        <text x="865" y="70">tool_calls log</text>
+        <text x="865" y="170">state_hash</text>
+        <text x="865" y="276" fill="#d9701e">Chấm điểm</text>
+        <text x="865" y="296" font-size="13" fill="#d9701e">hash khớp? → F1(calls)</text>
+      </g>
+      <g fill="none" stroke="currentColor" stroke-width="1.5" marker-end="url(#ar)">
+        <path d="M210,55 L268,58"/>
+        <path d="M355,86 L355,148"/>
+        <path d="M210,130 C240,130 245,175 268,178"/>
+        <path d="M210,205 L268,208"/>
+        <path d="M210,280 C240,280 245,245 268,242"/>
+        <path d="M460,198 L558,198"/>
+        <path d="M558,238 L462,238"/>
+        <path d="M730,180 C760,180 760,65 788,65"/>
+        <path d="M730,200 C760,200 765,165 788,165"/>
+      </g>
+      <path d="M460,166 L558,166" fill="none" stroke="currentColor" stroke-width="1.4" stroke-dasharray="5 4" marker-end="url(#ar)"/>
+      <g fill="none" stroke="#d9701e" stroke-width="1.5" marker-end="url(#arA)">
+        <path d="M865,190 L865,248"/>
+        <path d="M940,65 C958,65 958,285 942,285"/>
+      </g>
+      <g fill="currentColor" font-size="13" text-anchor="middle">
+        <text x="388" y="120">transcript</text>
+        <text x="509" y="160">validate()</text>
+        <text x="509" y="192">call(name, args)</text>
+        <text x="509" y="256">{ok, done, ...}</text>
+        <text x="509" y="300" fill="currentColor">nét đứt = không ghi log</text>
+      </g>
+    </svg>
+    </div>
+    <figcaption>Vòng lặp agent ↔ ToolEnv là nơi ăn điểm hoặc mất điểm: mỗi mũi tên <span class="mono">call()</span> là một dòng trong bài nộp, không thể rút lại.</figcaption>
+  </figure>
+</section>
+
+<section>
+  <h2>2. Cách chấm điểm và hệ quả thực tế</h2>
+  <div class="formula">Gold rỗng:       Score = 1 nếu bài nộp cũng rỗng, ngược lại 0
+Gold không rỗng: Score = 0 nếu hash_sys ≠ hash_gold hoặc M = 0
+                 Score = 2PR / (P + R),  P = M / (M + U),  R = M / |G|
+Final = 100 / N × Σ Score_i
+
+M = số call khớp gold (cùng tên, arg thường giống hệt, arg fuzzy token-F1 &gt; 0.6), mỗi call khớp tối đa 1 lần, không xét thứ tự
+U = số call nộp không khớp (kể cả call bị từ chối vì sai schema)</div>
+
+  <div class="tbl">
+  <table>
+    <thead><tr><th>Tình huống (gold có 3 call: get_status, climate_set, ride_hailing.book)</th><th>M</th><th>U</th><th>Score</th></tr></thead>
+    <tbody>
+      <tr><td>Đúng y hệt gold</td><td class="num">3</td><td class="num">0</td><td class="num">1.000</td></tr>
+      <tr><td>Thêm 1 lần đọc thừa, ví dụ <code>contacts.search</code></td><td class="num">3</td><td class="num">1</td><td class="num">0.857</td></tr>
+      <tr><td>Một call bị từ chối vì sai kiểu, rồi gọi lại đúng</td><td class="num">3</td><td class="num">1</td><td class="num">0.857</td></tr>
+      <tr><td>Bỏ qua <code>get_status</code> (ID đoán trúng). Read không đổi state nên hash vẫn khớp</td><td class="num">2</td><td class="num">0</td><td class="num">0.800</td></tr>
+      <tr><td>Đặt 25 độ thay vì 26 độ</td><td class="num">-</td><td class="num">-</td><td class="num zero">0</td></tr>
+      <tr><td>Gold là <code>[]</code> (người dùng đổi ý) nhưng agent vẫn tắt đèn</td><td class="num">-</td><td class="num">-</td><td class="num zero">0</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="two">
+    <div>
+      <h3>Hash là cổng tất cả hoặc không có gì</h3>
+      <ul>
+        <li>Hash bỏ qua <code>_meta</code>, app chỉ đọc (<span class="mono">weather, gold_price, fuel_price</span>) và các trường văn bản tự do (<span class="mono">content, title, note, pickup, ...</span>). <span class="tag v">đã đọc utils.py</span></li>
+        <li>Chuỗi được lowercase và gộp khoảng trắng. List vô hướng so như tập hợp. <b>List các object giữ thứ tự</b>, nên tạo 2 nhắc việc theo thứ tự ngược có thể lệch hash.</li>
+        <li>Sai một ID, một số tiền, một mốc giờ là mất trắng cả mẫu.</li>
+      </ul>
+    </div>
+    <div>
+      <h3>F1 trên call phạt mọi lời gọi thừa</h3>
+      <ul>
+        <li>Lời gọi đọc cũng tính. Gọi đọc "cho chắc" làm giảm P.</li>
+        <li>Arg không fuzzy phải giống hệt. Ví dụ <code>contacts.search</code> có <code>query</code> không fuzzy: gold dùng tên như người nói, viết hoa (<span class="mono">"Sếp Dũng"</span>, <span class="mono">"Minh"</span>).</li>
+        <li>Gold thường gọi read với <code>{}</code>: <span class="mono">smart_home.get_status</span> 93/107 lần, <span class="mono">calendar.list_events</span> 87/105 lần. Thêm filter tùy hứng là lệch gold. <span class="tag v">đã đếm</span></li>
+      </ul>
+    </div>
+  </div>
+  <p class="callout blue col">Bài học: mục tiêu không chỉ là "làm đúng việc" mà là "làm đúng việc theo đúng phong cách của gold". Phong cách này học được từ 1.545 mẫu train.</p>
+</section>
+
+<section>
+  <h2>3. Dữ liệu bằng số <span class="tag v">đã kiểm chứng</span></h2>
+  <div class="stats">
+    <div class="stat"><b>1.545 / 634</b><span>mẫu train / public_test</span></div>
+    <div class="stat"><b>46 / 36</b><span>app trong catalog train / public</span></div>
+    <div class="stat hot"><b>11</b><span>app chỉ có ở public, không có trong train</span></div>
+    <div class="stat hot"><b>410 / 634</b><span>mẫu public có cài ít nhất 1 app chưa từng thấy</span></div>
+    <div class="stat"><b>1.545 / 1.545</b><span>gold replay khớp final_state (env tất định)</span></div>
+    <div class="stat"><b>6,9 s</b><span>trung vị độ dài audio lượt cuối (1,7 đến 22,3 s)</span></div>
+    <div class="stat"><b>5.036</b><span>file wav train có transcript (kể cả lượt history)</span></div>
+    <div class="stat"><b>66%</b><span>mẫu train có history (tới 24 lượt)</span></div>
+  </div>
+  <div class="tbl">
+  <table>
+    <thead><tr><th>Loại nhãn trong train</th><th>Số mẫu</th><th>Tỷ lệ</th><th>Ví dụ (audio_text)</th></tr></thead>
+    <tbody>
+      <tr><td>Thực hiện hành động (có write hoặc chỉ read để trả lời)</td><td class="num">1.217</td><td class="num">78,8%</td><td>"Hết ca rồi, em gọi giúp anh hai suất cháo gà, rồi trả tiền nước tháng 9..." → 6 call</td></tr>
+      <tr><td>Đọc trước rồi mới hỏi thêm (<code>sys.ask_missing_info</code> ở cuối)</td><td class="num">157</td><td class="num">10,2%</td><td>"Gọi cho Lan nhé" → <span class="mono">contacts.search</span> thấy nhiều Lan → hỏi <span class="mono">contact_id</span></td></tr>
+      <tr><td>Hỏi ngay</td><td class="num">60</td><td class="num">3,9%</td><td>"Nhắc em đi họp với nha" → thiếu <span class="mono">time</span></td></tr>
+      <tr><td>Không gọi tool (<code>[]</code>)</td><td class="num">111</td><td class="num">7,2%</td><td>"Đặt khách sạn ở Đà Lạt" (không có app) · "Tắt đèn... à thôi khỏi"</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p class="col">Số call mỗi mẫu: 0 (111), 1 (369), 2 (428), 3 (359), 4 (161), 5 (107), 6 (10). Mẫu dùng 2 app trở lên: 715. Tham số hay bị hỏi nhất: <span class="mono">contact_id</span> (73), <span class="mono">amount</span> (21), <span class="mono">time</span> (10).</p>
+</section>
+
+<section>
+  <h2>4. Khó khăn, xếp theo mức ảnh hưởng tới điểm</h2>
+  <div class="hard">
+    <div><span class="n">1</span><p><b>Dịch chuyển miền (domain shift): app mới ở test.</b> 11 app public (stocks, parking, recipes, train_bus_tickets, ...) không có trong train, xuất hiện trong 65% mẫu public. Private test gần như chắc cũng có app lạ.</p>
+      <span class="ev">Hệ quả: một model "thuộc lòng" tên tool của train sẽ gãy. Agent phải đọc schema trong prompt và suy luận.</span>
+      <span class="fix">prompt chứa schema của app đã cài; validation tách theo app (leave-app-out); dữ liệu tổng hợp cho app mới, kiểm chứng bằng env.</span></div>
+    <div><span class="n">2</span><p><b>ASR trên giọng thật, 3 miền, nhiều tuổi.</b> Lỗi ở số tiền, giờ, tên riêng đi thẳng vào hash. Ở test, lượt user trong history cũng chỉ có audio, nên phải nhận dạng cả các lượt cũ.</p>
+      <span class="ev">184 transcript train có số tiền (nghìn, triệu, trăm); 492 có thời gian tương đối (mai, tối nay, thứ...).</span>
+      <span class="fix">đo WER/CER và lỗi thực thể riêng; fine-tune ASR trên 5.036 câu có transcript; chuẩn hóa số và giờ sau ASR.</span></div>
+    <div><span class="n">3</span><p><b>Hiện tượng hội thoại tự nhiên.</b> Tự sửa ("à không, cao quá"), điều kiện ("nếu mai mưa thì..."), phủ định ("đừng tắt đèn bếp"), tham chiếu lượt trước ("cái còn lại"), từ đệm.</p>
+      <span class="ev">Đếm thô bằng regex trên train: tự sửa ~109, điều kiện ~103, phủ định ~36, tham chiếu history ~27, từ đệm ~248.</span>
+      <span class="fix">gắn nhãn taxonomy cho từng mẫu và đo điểm theo từng nhóm; câu điều kiện phải đọc dữ liệu rồi mới quyết định.</span></div>
+    <div><span class="n">4</span><p><b>Không có lần thử lại.</b> Một ToolEnv mỗi mẫu, không reset, mọi call đều bị chấm. Không được dùng một môi trường "nháp" để thử trước lúc inference.</p>
+      <span class="ev">Cấm đọc <span class="mono">state.json</span>; tạo lại ToolEnv để thử là vi phạm luật.</span>
+      <span class="fix">validate() trước mỗi call (miễn phí); quyết định kỹ trước khi gọi; self-consistency trên kế hoạch dạng text chứ không trên môi trường.</span></div>
+    <div><span class="n">5</span><p><b>Lỗi im lặng.</b> ID không tồn tại, không đủ số dư, tìm kiếm rỗng đều trả <code>{"ok": true, "done": false}</code>, không phải lỗi.</p>
+      <span class="ev">Đọc trong docstring <span class="mono">executor.py</span>.</span>
+      <span class="fix">agent phải kiểm tra <code>done</code> và nội dung kết quả, không chỉ <code>ok</code>.</span></div>
+    <div><span class="n">6</span><p><b>Biết khi nào hỏi, khi nào không làm.</b> 21% mẫu train là hỏi thêm hoặc rỗng. Hỏi sai tool hoặc sai tên tham số là 0 điểm.</p>
+      <span class="ev"><span class="mono">sys.ask_missing_info</span> nhận <span class="mono">tool_name</span> và <span class="mono">params</span> đúng tên trong schema.</span>
+      <span class="fix">quy tắc rõ: thiếu tham số bắt buộc, hoặc tìm được nhiều ứng viên (nhiều "Minh") thì hỏi; không có app phù hợp hoặc người dùng đổi ý thì trả rỗng.</span></div>
+    <div><span class="n">7</span><p><b>Suy luận thời gian và đơn vị.</b> "6 rưỡi sáng mai" phải thành <span class="mono">2026-11-17T06:30:00+07:00</span> dựa trên <span class="mono">current_time</span>; "nửa triệu" thành 500000.</p>
+      <span class="fix">bộ chuẩn hóa có unit test cho giờ, ngày, tiền; đưa giờ hiện tại và thứ trong tuần vào prompt.</span></div>
+    <div><span class="n">8</span><p><b>Ràng buộc chưa rõ.</b> Giới hạn GPU/RAM/thời gian của Docker, có được gọi API ngoài hay không, model nào được phép.</p>
+      <span class="fix">hỏi BTC sớm; thiết kế để chạy offline trên 1 GPU; giữ phương án model nhỏ hơn.</span></div>
+  </div>
+</section>
+
+<section>
+  <h2>5. Tech stack <span class="tag p">đề xuất</span></h2>
+  <div class="tbl">
+  <table>
+    <thead><tr><th>Lớp</th><th>Lựa chọn chính</th><th>Phương án so sánh</th><th>Vì sao</th></tr></thead>
+    <tbody>
+      <tr><td>Phân tích dữ liệu</td><td>Python 3.10+, pandas, Jupyter</td><td>DuckDB cho truy vấn nhanh trên JSONL</td><td>zaic_tools chỉ dùng stdlib, dễ ghép vào notebook</td></tr>
+      <tr><td>Nghe và gán nhãn audio</td><td>Label Studio hoặc một trang HTML nghe nhanh</td><td>Audacity cho clip khó</td><td>cần ghi lại vùng miền, nhiễu, từ khó cho từng clip</td></tr>
+      <tr><td>ASR</td><td>PhoWhisper-large (Whisper fine-tune tiếng Việt)</td><td>Whisper large-v3 / turbo; chạy bằng faster-whisper</td><td>đo WER và lỗi thực thể trên train trước khi chọn</td></tr>
+      <tr><td>ASR end-to-end (thử nghiệm)</td><td>Audio LLM dạng Qwen-Omni</td><td>pipeline ASR → LLM</td><td>tránh mất thông tin ở transcript; rủi ro cao hơn</td></tr>
+      <tr><td>LLM agent</td><td>Qwen3 instruct (8B đến 32B), tool calling gốc</td><td>Gemma 3, Llama 3.x; một API lớn làm teacher</td><td>tiếng Việt tốt, format tool call sẵn có</td></tr>
+      <tr><td>Serving</td><td>vLLM + structured output (JSON theo schema)</td><td>transformers generate</td><td>ép JSON hợp lệ, giảm call bị từ chối</td></tr>
+      <tr><td>Huấn luyện</td><td>LoRA / QLoRA với TRL hoặc Unsloth</td><td>LLaMA-Factory</td><td>1.545 mẫu: fine-tune toàn bộ không đáng</td></tr>
+      <tr><td>Preference / RL</td><td>DPO, GRPO (TRL hoặc verl), reward = điểm chính thức chạy lại trên env train</td><td>rejection sampling + SFT</td><td>env tất định nên reward chính xác</td></tr>
+      <tr><td>Đánh giá</td><td>Scorer tự viết theo đúng công thức + slice theo taxonomy</td><td>-</td><td>không có scorer thì mọi cải tiến là đoán</td></tr>
+      <tr><td>Đóng gói</td><td>Docker + trọng số offline + checksum</td><td>-</td><td>nộp 16/11, chạy private 20 đến 23/11</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<section>
+  <h2>6. Thuật ngữ đáng nhớ</h2>
+  <div class="vocab">
+    <div><b>domain shift</b>dữ liệu test khác phân phối train (ở đây: app mới)</div>
+    <div><b>leave-app-out validation</b>giữ lại vài app khi train để mô phỏng app chưa thấy</div>
+    <div><b>entity error rate</b>tỷ lệ sai ở số, tên, giờ: quan trọng hơn WER</div>
+    <div><b>disfluency / self-repair</b>từ đệm và tự sửa lời trong lúc nói</div>
+    <div><b>all-or-nothing gate</b>điều kiện sai là mất trắng (hash)</div>
+    <div><b>silent failure</b>lỗi không báo lỗi (<span class="mono">ok: true, done: false</span>)</div>
+    <div><b>trajectory</b>chuỗi call, kết quả và quyết định của agent</div>
+    <div><b>deterministic environment</b>cùng input luôn ra cùng state: reward tin được</div>
+  </div>
+</section>
+
+<footer>Số liệu lấy từ <span class="mono">D:\zaloai2026\data\train+public_test</span> (release v3.2.0, build 24/10/2026) bằng script phân tích cục bộ. Các con số "đếm thô bằng regex" là ước lượng, cần gắn nhãn chính xác ở giai đoạn hiểu dữ liệu. Xem Artifact 2 cho lộ trình.</footer>
+</div>
