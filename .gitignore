@@ -2,6 +2,12 @@
 data/
 *.zip
 *.wav
+# Per-sample derived files (transcripts, labels, hashes, ASR output): the repo is public
+work/
+
+# Secrets
+.env
+.env.*
 
 # Python
 __pycache__/

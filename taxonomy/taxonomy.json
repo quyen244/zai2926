@@ -1,0 +1,71 @@
+{
+  "version": "1.0",
+  "note": "Taxonomy of LifeMate requests. Examples are invented, not taken from the competition data. 'outcome' is single-label; every other group is multi-label (zero or more tags). Tag ids are what the tagger must output.",
+  "groups": [
+    {
+      "id": "outcome",
+      "name": "Kết quả mong đợi của lượt cuối",
+      "cardinality": "exactly_one",
+      "tags": [
+        {"id": "action", "definition": "Người dùng muốn thay đổi dữ liệu ở ít nhất một app (bật/tắt thiết bị, chuyển tiền, tạo nhắc việc, gửi tin...), và có app đã cài làm được.", "example": "Tắt đèn phòng ngủ giúp mình."},
+        {"id": "read_only", "definition": "Chỉ cần tra cứu để trả lời (thời tiết, số dư, giá vàng, lịch hôm nay...), không thay đổi dữ liệu nào. Gồm cả câu điều kiện mà điều kiện chỉ cần kiểm tra.", "example": "Mai Hà Nội có mưa không?"},
+        {"id": "ask_missing", "definition": "Yêu cầu thực hiện được nhưng thiếu một tham số bắt buộc (giờ, số tiền, người nhận...) hoặc thực thể mơ hồ có thể khớp nhiều đối tượng; agent phải hỏi lại.", "example": "Nhắc mình gọi cho khách."},
+        {"id": "out_of_scope", "definition": "Không app nào đã cài làm được yêu cầu (vd đặt khách sạn khi không có app khách sạn), hoặc chỉ là trò chuyện không cần hành động.", "example": "Đặt giúp tôi một phòng khách sạn ở Huế."},
+        {"id": "cancelled", "definition": "Người dùng tự hủy, đổi ý hoặc bảo đừng làm gì nữa trong chính lượt nói, nên cuối cùng không có hành động.", "example": "Bật quạt phòng khách... à thôi khỏi, không cần đâu."}
+      ]
+    },
+    {
+      "id": "structure",
+      "name": "Cấu trúc yêu cầu",
+      "cardinality": "multi",
+      "tags": [
+        {"id": "multi_intent", "definition": "Có từ hai hành động/tra cứu độc lập trở lên trong một lượt nói.", "example": "Tắt điều hòa rồi đặt xe về nhà cho tôi."},
+        {"id": "conditional", "definition": "Hành động phụ thuộc một điều kiện cần kiểm tra trên dữ liệu (thời tiết, số dư, trạng thái thiết bị...).", "example": "Nếu tài khoản còn trên hai triệu thì đóng tiền điện."},
+        {"id": "sequential_dependency", "definition": "Bước sau cần kết quả của bước trước (tìm rồi mới làm; lấy số tiền của hóa đơn để chuyển).", "example": "Chuyển cho chị Lan đúng bằng tiền nước tháng này."},
+        {"id": "aggregation", "definition": "Cần tổng hợp hoặc so sánh nhiều kết quả (nhiều nhất, tổng, rẻ nhất, tất cả).", "example": "Tắt hết đèn tầng một."},
+        {"id": "partial_negation", "definition": "Một phần yêu cầu bị loại trừ hoặc phủ định nhưng phần còn lại vẫn làm.", "example": "Bật đèn phòng khách, còn quạt thì đừng."}
+      ]
+    },
+    {
+      "id": "speech",
+      "name": "Hiện tượng lời nói",
+      "cardinality": "multi",
+      "tags": [
+        {"id": "self_repair", "definition": "Người nói sửa lại một giá trị đã nói (à không, nhầm, ý tôi là...); giá trị đúng là giá trị sau cùng.", "example": "Đặt báo thức sáu giờ, à không, sáu rưỡi."},
+        {"id": "filler_disfluency", "definition": "Có từ đệm, ngập ngừng, lặp từ (ờ, ừm, à, ...) không mang nội dung.", "example": "Ờ... ừm, mở nhạc giúp anh."},
+        {"id": "vocative_politeness", "definition": "Có lời gọi hoặc kính ngữ hướng tới trợ lý (em ơi, trợ lý ơi, giúp chị với nha).", "example": "Em ơi, xem giúp chị lịch mai nha."},
+        {"id": "code_switching", "definition": "Có từ tiếng Anh xen vào câu tiếng Việt (book, check, email, app, AC...).", "example": "Book giúp mình cái xe về nhà."},
+        {"id": "dialect_north", "definition": "Có từ vựng đặc trưng miền Bắc (thế, nhé, ạ, vâng, bây giờ, chỗ này...) đủ để nhận ra vùng.", "example": "Thế thì tắt luôn đèn bếp nhé."},
+        {"id": "dialect_central", "definition": "Có từ vựng đặc trưng miền Trung (ni, nớ, rứa, mô, răng, tê, chừ...).", "example": "Chừ mở giùm o cái quạt ni."},
+        {"id": "dialect_south", "definition": "Có từ vựng đặc trưng miền Nam (hông, nghen, nha, giùm, ổng, bả, dìa, xài, bữa nay...).", "example": "Coi giùm tui bữa nay có mưa hông nghen."}
+      ]
+    },
+    {
+      "id": "entities",
+      "name": "Thực thể cần trích xuất",
+      "cardinality": "multi",
+      "tags": [
+        {"id": "relative_time", "definition": "Thời gian tương đối phải quy đổi theo giờ hiện tại (mai, tối nay, thứ sáu tuần sau, nửa tiếng nữa).", "example": "Nhắc tôi họp lúc ba giờ chiều mai."},
+        {"id": "absolute_time", "definition": "Ngày giờ cụ thể (15/11, 7 giờ 30, tháng 9).", "example": "Đặt lịch khám ngày 20 tháng 11 lúc 8 giờ."},
+        {"id": "money_amount", "definition": "Số tiền nói bằng lời hoặc số (năm trăm nghìn, nửa triệu, 2 triệu rưỡi, 200k).", "example": "Chuyển cho mẹ năm trăm nghìn."},
+        {"id": "quantity_setting", "definition": "Số lượng hoặc mức cài đặt không phải tiền (26 độ, 40 phần trăm, hai suất, 9000 bước).", "example": "Để điều hòa 26 độ."},
+        {"id": "person_name", "definition": "Tên người hoặc liên hệ cụ thể (Minh, chị Hương, anh Tuấn kế toán).", "example": "Nhắn cho anh Tuấn là em tới trễ."},
+        {"id": "kinship_or_role", "definition": "Gọi người bằng quan hệ hoặc vai trò thay vì tên (mẹ, bố, sếp, cô giáo, bác Ba).", "example": "Gọi cho sếp giúp tôi."},
+        {"id": "place_or_address", "definition": "Địa điểm, địa chỉ, tên quán hoặc cửa hàng.", "example": "Đặt xe tới 45 Lý Thường Kiệt."},
+        {"id": "device_or_room", "definition": "Thiết bị hoặc phòng trong nhà (đèn phòng khách, điều hòa phòng ngủ, tầng hai).", "example": "Tắt đèn tầng hai."},
+        {"id": "free_text_content", "definition": "Có nội dung văn bản tự do phải chép lại (nội dung tin nhắn, tiêu đề ghi chú, chủ đề email).", "example": "Nhắn Lan là tối nay họp lớp lúc bảy giờ."}
+      ]
+    },
+    {
+      "id": "context",
+      "name": "Phụ thuộc ngữ cảnh",
+      "cardinality": "multi",
+      "tags": [
+        {"id": "history_reference", "definition": "Dùng đại từ hoặc cụm chỉ tới thứ đã nói ở lượt trước (cái đó, cái còn lại, người đó, như lúc nãy); không hiểu được nếu bỏ history.", "example": "Ừ, hủy cái thứ hai đi."},
+        {"id": "profile_reference", "definition": "Dựa vào hồ sơ người dùng (về nhà, tới công ty, thành phố đang ở).", "example": "Đặt xe từ công ty về nhà."},
+        {"id": "ambiguous_entity", "definition": "Thực thể có thể khớp nhiều đối tượng trong dữ liệu (nhiều người tên Minh, nhiều đèn phòng khách).", "example": "Gọi cho Minh."},
+        {"id": "implicit_parameter", "definition": "Tham số không nói ra nhưng suy được hợp lý từ ngữ cảnh hoặc thói quen (tài khoản mặc định, giờ hiện tại).", "example": "Đóng tiền điện tháng này luôn."}
+      ]
+    }
+  ]
+}
