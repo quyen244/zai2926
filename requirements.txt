@@ -10,4 +10,5 @@ ctranslate2==4.8.4
 #   nvidia-cublas-cu12==12.9.2.10 nvidia-cudnn-cu12==9.27.0.42
 # Only needed to convert PhoWhisper to CTranslate2 (ct2-transformers-converter); CPU torch is enough
 transformers==5.21.0
-torch==2.15.0
+# 2.15.0 exists only on the PyTorch CPU index, not on PyPI; 2.14.1 is the newest on PyPI
+torch==2.14.1
