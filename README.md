@@ -27,7 +27,8 @@ Per-sample derived files (transcripts, gold hashes, ASR output) are written to `
 
 ```bash
 py -3.12 -m venv .venv
-.venv/Scripts/python -m pip install pytest pandas jiwer faster-whisper soundfile nvidia-cublas-cu12 "nvidia-cudnn-cu12==9.*"
+.venv/Scripts/python -m pip install -r requirements.txt
+cp .env.example .env   # then put the OpenAI key in .env
 .venv/Scripts/python -m pytest tests
 ```
 

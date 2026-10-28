@@ -1,0 +1,14 @@
+# Python 3.12. Versions tested on 2026-10-28.
+pytest==9.2.0
+pandas==3.1.0
+numpy==2.5.4
+jiwer==4.0.0
+soundfile==0.14.0
+faster-whisper==1.2.1
+ctranslate2==4.8.4
+# CUDA 12 runtime libraries for CTranslate2 (skip if the server already has CUDA 12 + cuDNN 9 installed)
+nvidia-cublas-cu12==12.9.2.10
+nvidia-cudnn-cu12==9.27.0.42
+# Only needed to convert PhoWhisper to CTranslate2 (ct2-transformers-converter); CPU torch is enough
+transformers==5.21.0
+torch==2.15.0
