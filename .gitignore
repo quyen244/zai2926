@@ -1,0 +1,16 @@
+# Competition data: license forbids sharing or redistribution
+data/
+*.zip
+*.wav
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+.ipynb_checkpoints/
+
+# Outputs and model weights
+submission*.jsonl
+checkpoints/
+*.safetensors
+*.bin
