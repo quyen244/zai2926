@@ -8,6 +8,12 @@ Read these first when resuming, in this order:
 4. `docs/lifemate-roadmap.html` - phases with exit gates and dates.
 5. `README.md` - code layout and setup.
 
+## Machines (how the user names them)
+
+- "server rtx": the RTX 5060 Ti GPU server work session.
+- "local": the user's current workstation (this Windows machine).
+- "kaggle server": work done on Kaggle.
+
 ## Rules for this repo
 
 - The repo `quyen244/zai2926` is PUBLIC. Never commit competition data or anything per-sample derived from it (transcripts, labels, hashes, ASR output): those go in `work/` (git-ignored). Reports hold aggregates only.
