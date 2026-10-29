@@ -81,11 +81,12 @@ def main() -> None:
   <td class="form">
     <label>Region <select name="region"><option></option><option>Bắc</option><option>Trung</option><option>Nam</option><option>?</option></select></label>
     <label>Noise <select name="noise"><option></option><option>0 clean</option><option>1 some</option><option>2 heavy</option></select></label>
+    <label>Volume <select name="volume"><option></option><option>quiet</option><option>normal</option><option>loud</option></select></label>
     <label>Speed <select name="speed"><option></option><option>slow</option><option>normal</option><option>fast</option></select></label>
     <label>Clarity <select name="clarity"><option></option><option>easy</option><option>hard</option><option>unintelligible</option></select></label>
     <label>Reference wrong? <select name="ref_wrong"><option></option><option>no</option><option>yes</option></select></label>
     <input name="hard_words" placeholder="hard words / misheard spans">
-    <input name="notes" placeholder="notes">
+    <input name="notes" placeholder="notes: [ellipsis] = ref adds context not spoken, [mishear] = ref sounds like a real mishearing">
   </td>
 </tr>""")
 
@@ -113,7 +114,7 @@ rows.forEach(r=>{{const id=r.dataset.id;r.querySelectorAll('select,input').forEa
   el.addEventListener('change',()=>{{db[id]=db[id]||{{}};db[id][el.name]=el.value;save()}});}})}});
 mark();
 document.getElementById('export').onclick=()=>{{
-  const cols=['region','noise','speed','clarity','ref_wrong','hard_words','notes'];
+  const cols=['region','noise','volume','speed','clarity','ref_wrong','hard_words','notes'];
   const q=v=>'"'+String(v||'').replace(/"/g,'""')+'"';
   const lines=['id,'+cols.join(',')].concat(rows.map(r=>[r.dataset.id].concat(cols.map(c=>(db[r.dataset.id]||{{}})[c])).map(q).join(',')));
   const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\\ufeff'+lines.join('\\n')],{{type:'text/csv'}}));a.download='listening.csv';a.click();
