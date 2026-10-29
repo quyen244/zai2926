@@ -86,7 +86,7 @@ def main() -> None:
     <label>Clarity <select name="clarity"><option></option><option>easy</option><option>hard</option><option>unintelligible</option></select></label>
     <label>Reference wrong? <select name="ref_wrong"><option></option><option>no</option><option>yes</option></select></label>
     <input name="hard_words" placeholder="hard words / misheard spans">
-    <input name="notes" placeholder="notes: [ellipsis] = ref adds context not spoken, [mishear] = ref sounds like a real mishearing">
+    <input name="notes" placeholder="notes: [ellipsis] ref adds unspoken context, [mishear] real mishearing, [code_switch] ASR garbles an EN loanword/brand">
   </td>
 </tr>""")
 
