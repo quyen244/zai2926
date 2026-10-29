@@ -21,7 +21,7 @@ Reports: `reports/stage1_summary.md` (start here), `stage1_labels.md`, `stage1_t
 - [~] 1.1 Listening pass: sheet built (`python scripts/stage1_listening.py` -> `work/listening/index.html`, 170 clips). Needs a human to listen and export `listening.csv`.
   - [ ] Check whether reference transcripts are noisy (a suspicious one was seen).
 - [x] 1.2 ASR benchmark on 400 stratified train clips: PhoWhisper-large best (WER 0.246, gold-arg recall 0.570, hallucination 1.0%) vs Whisper large-v3 (0.297 / 0.492 / 5.8%).
-  - [~] Whole-utterance hallucination: not explained by level; longer leading silence. Peak-norm or VAD fixes 11/25 (large-v3). Probe PhoWhisper's 4 cases.
+  - [x] Whole-utterance hallucination: root cause per quyen (listened to the clips) is simply that those clips are hard to hear/understand, not a pipeline artifact. On PhoWhisper (the model used from Stage 2 on) it is 1.0% (4/400); accepted, no fix planned.
 - [x] 1.3 Label anatomy: gold read-call conventions, ID provenance (25% from history), ask patterns, empty-gold subtypes.
 - [~] 1.4 Taxonomy: regex tags for all train (`work/tags.jsonl`); LLM tagger ready (`scripts/llm_tag.py`, `taxonomy/taxonomy.json`).
   - [ ] Write the prompts in `prompts/taxonomy_tagging.{system,user}.md` (team).
@@ -35,7 +35,7 @@ Reports: `reports/stage1_summary.md` (start here), `stage1_labels.md`, `stage1_t
 - [x] 2.1 ASR pipeline (`scripts/asr_run.py`): public_test 1933/1933 and train 5036/5036 clips (final + history user turns), no empty hypothesis. Output `work/asr/phowhisper/<split>.jsonl`.
 - [x] 2.1 Hallucination guard (flag -> re-decode with peak-norm + VAD): fired on 4 train clips and 0 public_test clips; 0 empty, 0 with compression_ratio > 2.4 after the guard.
 - [x] 2.2 Text normaliser (`lifemate/normalize.py`: numbers/money/clock time/relative dates), 26 tests. Checked on train gold args: ISO dates found in 423/603 (the rest mostly default to the current date, left to the prompt builder); money/time misses are mostly amounts computed from app data or part-of-day inferred from "tối nào".
-- [ ] 2.3 `build_prompt(sample)`: installed-tool schemas, compact history with IDs, context.
+- [x] 2.3 `build_prompt(sample)` (`lifemate/prompt.py`): system rules + context, tools of installed apps only, history replayed as real tool-calling turns. `scripts/prompt_mock.py` prints a labelled mock (SYSTEM/TOOLS/MESSAGES) for review; 4 structural tests pass. Median prompt ~16k chars / ~5.5k tokens on a 4-history-turn train sample.
 - [ ] 2.4 SFT trajectories from train (reference + ASR text variants), replay-verified.
 
 ## Stage 3 - Baselines

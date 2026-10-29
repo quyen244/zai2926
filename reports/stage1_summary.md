@@ -33,15 +33,17 @@ Details: `stage0.md`, `stage1_labels.md`, `stage1_taxonomy.md`, `stage1_asr.md`.
 - Even with it, only about half of the gold argument strings that are spoken (names, places, queries) survive ASR verbatim. Those are non-fuzzy arguments, so each miss costs the hash or the call match.
 - About 6% of clips get a **whole-utterance hallucination** (YouTube-style filler such as a "thanks for watching" line instead of the real request).
   Signal level does not explain it (same peak and RMS as normal clips); hallucinated clips have longer leading silence (0.42 s vs 0.22 s) and are longer.
-  Peak normalisation or VAD alone removes it on 11 of 25 clips. Root cause not yet found.
+  Peak normalisation or VAD alone removes it on 11 of 25 clips.
+  Root cause, per quyen (listened to the affected clips): the audio itself is hard to hear/understand in those clips, not a preprocessing artifact.
+  On PhoWhisper, the model used from Stage 2 on, the rate is 1.0% (4/400); accepted as is.
 - Southern dialect clips have the worst WER (0.39 for large-v3).
 
 ## Not done in this stage
 
 - Listening pass (1.1): the sheet is ready at `work/listening/index.html` (170 clips: 120 train + 50 public); it needs a human.
 - LLM tagging (1.4): pipeline, taxonomy (`taxonomy/taxonomy.json`) and rate limiting are ready and tested on 6 samples; it waits for the team's prompts in `prompts/`.
-- PhoWhisper hallucinations not yet probed with `scripts/asr_hallucination_probe.py` (4 clips left).
+- PhoWhisper hallucinations (4 clips): closed, see Stage 1.2 above.
 
 ## Gate for Stage 2
 
-Choose the ASR (or fine-tune it) using gold-arg recall, not WER alone, and fix the hallucination failure mode first: it zeroes the whole sample.
+Choose the ASR (or fine-tune it) using gold-arg recall, not WER alone. The hallucination failure mode zeroes the whole sample, but on PhoWhisper it is down to 1.0% and traced to hard-to-hear audio, so it no longer blocks Stage 2.
