@@ -86,7 +86,7 @@ def main() -> None:
     <label>Clarity <select name="clarity"><option></option><option>easy</option><option>hard</option><option>unintelligible</option></select></label>
     <label>Reference wrong? <select name="ref_wrong"><option></option><option>no</option><option>yes</option></select></label>
     <input name="hard_words" placeholder="hard words / misheard spans">
-    <input name="notes" placeholder="notes: [ellipsis] ref adds unspoken context, [mishear] real mishearing, [code_switch] ASR garbles an EN loanword/brand">
+    <input name="notes" placeholder="notes (xem convention ở header)">
   </td>
 </tr>""")
 
@@ -97,11 +97,13 @@ table{{border-collapse:collapse;width:100%;background:#fff}} td{{border-bottom:1
 td.id{{width:140px;font-family:monospace}} td.form{{width:300px}} .form label{{display:block;margin-bottom:3px}}
 .form select{{float:right}} .form input{{width:100%;box-sizing:border-box;margin-top:4px}}
 .ref{{margin:6px 0;font-weight:600}} .hyp{{color:#5b6577}} .hyp b{{font-family:monospace;font-weight:600;color:#1f5fd1}}
-header{{position:sticky;top:0;background:#f5f7fa;padding:8px 0;display:flex;gap:12px;align-items:center}}
+header{{position:sticky;top:0;background:#f5f7fa;padding:8px 0 4px;display:flex;flex-direction:column;gap:4px}}
+header .row{{display:flex;gap:12px;align-items:center}}
 tr.done td{{background:#eef6f1}} audio{{width:100%}}
 </style></head><body>
-<header><b>LifeMate listening sheet</b> <span id="count"></span> <button id="export">Export CSV</button>
-<small>Answers are saved in this browser automatically.</small></header>
+<header><div class="row"><b>LifeMate listening sheet</b> <span id="count"></span> <button id="export">Export CSV</button>
+<small>Answers are saved in this browser automatically.</small></div>
+<small>notes convention: <b>[ellipsis]</b> ref thêm từ không nói ra &middot; <b>[mishear]</b> nghe nhầm thật &middot; <b>[code_switch]</b> ASR lẫn từ tiếng Anh/tên riêng</small></header>
 <table>{''.join(items)}</table>
 <script>
 const KEY='lifemate-listening-v1';
