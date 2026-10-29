@@ -63,10 +63,11 @@ def build_context_block(ctx: dict) -> str:
 
 
 def build_tools(split: str, installed_apps: dict, root=DATA_ROOT) -> list[dict]:
-    """OpenAI-style function specs, one per tool of the installed apps only."""
+    """OpenAI-style function specs: one per tool of the installed apps, plus the "sys" app (ask_missing_info),
+    which the catalog documents as always available regardless of installed_apps."""
     tools = []
     for app in load_catalog(split, root)["apps"]:
-        if app["id"] not in installed_apps:
+        if app["id"] not in installed_apps and app["id"] != "sys":
             continue
         for t in app["tools"]:
             tools.append({"type": "function", "function": {

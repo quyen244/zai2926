@@ -17,8 +17,15 @@ def sample_with_history():
 def test_tools_match_installed_apps(sample_with_history):
     prompt = build_prompt(sample_with_history, "train", sample_with_history["audio_text"])
     tool_apps = {t["function"]["name"].split(".")[0] for t in prompt["tools"]}
-    assert tool_apps <= set(sample_with_history["context"]["installed_apps"])
-    assert tool_apps  # at least one installed app actually has tools
+    # "sys" (ask_missing_info) is always available per the catalog, regardless of installed_apps
+    assert tool_apps <= set(sample_with_history["context"]["installed_apps"]) | {"sys"}
+    assert tool_apps - {"sys"}  # at least one installed app actually has tools
+
+
+def test_tools_always_include_ask_missing_info(sample_with_history):
+    prompt = build_prompt(sample_with_history, "train", sample_with_history["audio_text"])
+    names = {t["function"]["name"] for t in prompt["tools"]}
+    assert "sys.ask_missing_info" in names
 
 
 def test_tool_specs_are_valid_json_schema(sample_with_history):

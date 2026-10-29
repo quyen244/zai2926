@@ -25,6 +25,27 @@ URL = "https://api.openai.com/v1/chat/completions"
 RETRY_STATUS = {408, 409, 429, 500, 502, 503, 504}
 
 
+def _api_name(name: str) -> str:
+    """Competition tool names ("app.tool") -> OpenAI function-name pattern (no dot allowed)."""
+    return name.replace(".", "__")
+
+
+def _real_name(name: str) -> str:
+    return name.replace("__", ".")
+
+
+def _api_message(m: dict) -> dict:
+    if not m.get("tool_calls"):
+        return m
+    return {**m, "tool_calls": [{**c, "function": {**c["function"], "name": _api_name(c["function"]["name"])}} for c in m["tool_calls"]]}
+
+
+def _real_message(m: dict) -> dict:
+    if not m.get("tool_calls"):
+        return m
+    return {**m, "tool_calls": [{**c, "function": {**c["function"], "name": _real_name(c["function"]["name"])}} for c in m["tool_calls"]]}
+
+
 def load_env(path: Path = PROJECT / ".env") -> None:
     """Put KEY=VALUE lines of .env into os.environ (existing variables win)."""
     if not path.is_file():
@@ -122,6 +143,43 @@ class LLM:
                     if bad_json > 1:
                         raise
                     continue
+            except urllib.error.HTTPError as e:
+                if e.code not in RETRY_STATUS or attempt == max_retries:
+                    raise RuntimeError(f"OpenAI HTTP {e.code}: {e.read()[:300]!r}") from None
+                delay = float(e.headers.get("retry-after") or 0) or min(60, 2 ** attempt + random.random())
+                self.limiter.pause(delay)
+            except (urllib.error.URLError, TimeoutError) as e:
+                if attempt == max_retries:
+                    raise RuntimeError(f"OpenAI request failed: {e}") from None
+                time.sleep(min(60, 2 ** attempt + random.random()))
+            with self.usage.lock:
+                self.usage.retries += 1
+        raise RuntimeError("unreachable")
+
+    def chat_tools(self, system: str, messages: list[dict], tools: list[dict], max_tokens: int = 1000,
+                    temperature: float = 0, max_retries: int = 6) -> dict:
+        """One chat completion with function-calling tools (native tool_calls, not JSON mode). Returns the assistant
+        message dict straight from the API ({"role", "content", "tool_calls"}): tool_calls[i]["function"]["arguments"]
+        stays a JSON string, same wire shape lifemate.prompt builds, so the caller appends it to `messages` as is.
+        Tool names use the competition's "app.tool" form everywhere in `tools`/`messages`/the returned message;
+        OpenAI's function name pattern rejects the dot, so it is swapped for "__" only on the wire, both ways,
+        invisibly to the caller (lifemate.agent never sees the sanitised form).
+        temperature=0 for reproducible agent runs. Retries rate-limit and server errors like chat_json."""
+        api_tools = [{**t, "function": {**t["function"], "name": _api_name(t["function"]["name"])}} for t in tools]
+        api_messages = [_api_message(m) for m in messages]
+        full_messages = [{"role": "system", "content": system}] + api_messages
+        body = {"model": self.model, "messages": full_messages, "tools": api_tools, "tool_choice": "auto",
+                "temperature": temperature, "max_completion_tokens": max_tokens, "reasoning_effort": "none"}
+        data = json.dumps(body).encode("utf-8")
+        est = len(data) // 3 + max_tokens
+        for attempt in range(max_retries + 1):
+            self.limiter.acquire(est)
+            req = urllib.request.Request(URL, data=data, headers={"Authorization": f"Bearer {self.key}", "Content-Type": "application/json"})
+            try:
+                with urllib.request.urlopen(req, timeout=self.timeout) as r:
+                    d = json.load(r)
+                self.usage.add(d.get("usage", {}))
+                return _real_message(d["choices"][0]["message"])
             except urllib.error.HTTPError as e:
                 if e.code not in RETRY_STATUS or attempt == max_retries:
                     raise RuntimeError(f"OpenAI HTTP {e.code}: {e.read()[:300]!r}") from None

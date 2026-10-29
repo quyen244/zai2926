@@ -2,7 +2,7 @@ import importlib.util
 import time
 from pathlib import Path
 
-from lifemate.llm import RateLimiter
+from lifemate.llm import RateLimiter, _api_message, _api_name, _real_message, _real_name
 
 spec = importlib.util.spec_from_file_location("llm_tag", Path(__file__).resolve().parent.parent / "scripts" / "llm_tag.py")
 llm_tag = importlib.util.module_from_spec(spec)
@@ -55,3 +55,18 @@ def test_rate_limiter_token_budget():
     t = time.monotonic()
     rl.acquire(300)
     assert time.monotonic() - t >= 0.25
+
+
+def test_api_name_roundtrip():
+    assert _api_name("alarm.list") == "alarm__list"
+    assert _real_name(_api_name("ride_hailing.cancel")) == "ride_hailing.cancel"
+
+
+def test_api_message_sanitises_tool_call_names_and_leaves_others_alone():
+    plain = {"role": "user", "content": "hi"}
+    assert _api_message(plain) == plain
+    msg = {"role": "assistant", "content": None, "tool_calls": [
+        {"id": "c1", "type": "function", "function": {"name": "alarm.create", "arguments": "{}"}}]}
+    api = _api_message(msg)
+    assert api["tool_calls"][0]["function"]["name"] == "alarm__create"
+    assert _real_message(api) == msg

@@ -40,10 +40,12 @@ Reports: `reports/stage1_summary.md` (start here), `stage1_labels.md`, `stage1_t
 
 ## Stage 3 - Baselines
 
-- [ ] B0 reference transcript + LLM tool loop.
-- [ ] B1 ASR transcript.
+- [~] Agent loop built (`lifemate/agent.py` + `scripts/run_baseline.py`): one ToolEnv per sample, LLM tool-calling via `lifemate/llm.py: chat_tools`, writes a submission.jsonl matching `data/.../sample_submission.jsonl` exactly (verified byte-for-byte on keys). Smoke-tested end to end on 3 train samples (B0): scores 0.36 / 1.0 / 0.0, harness confirmed working.
+  - Fixed along the way: `build_tools()` was dropping `sys.ask_missing_info` (always available per the catalog, not gated by installed_apps). OpenAI's function name pattern rejects ".", so `chat_tools` maps "app.tool" <-> "app__tool" on the wire only. `gpt-6-luna` needs `reasoning_effort: "none"` to use tools on `/v1/chat/completions`.
+- [ ] B0 reference transcript: run on a larger train sample for a real score estimate.
+- [ ] B1 ASR transcript: run on public_test, produce the actual submission file.
 - [ ] B2 + validate-before-call, `done` check, step cap, few-shot retrieval.
-- [ ] Per-slice report (taxonomy, seen vs unseen apps); first public leaderboard submission.
+- [ ] Per-slice report (taxonomy, seen vs unseen apps); first public leaderboard submission (user uploads via the portal, 5/day quota).
 
 ## Stage 4 - Upgrades I
 
