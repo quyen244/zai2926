@@ -37,11 +37,16 @@ def main() -> None:
     pool = json.loads(bench_path.read_text(encoding="utf-8")) if bench_path.is_file() else sorted(train)
     if len(pool) < 120:
         print(f"warning: pool is only {len(pool)} ids ({bench_path} looks stale/partial); picking from it anyway")
-    hyps: dict[str, dict[str, str]] = {}
+    hyps: dict[str, dict[str, str]] = {}  # sample id -> {model tag: hyp} (old asr_bench.py files, id-keyed)
     for f in sorted((PROJECT / "work" / "asr").glob("*.jsonl")):
         for line in f.read_text(encoding="utf-8").splitlines():
             r = json.loads(line)
             hyps.setdefault(r["id"], {})[f.stem] = r["hyp"]
+    phowhisper: dict[str, dict[str, str]] = {}  # split -> {audio path: hyp} (the real Stage 2.1 production output)
+    for split in ("train", "public_test"):
+        f = PROJECT / "work" / "asr" / "phowhisper" / f"{split}.jsonl"
+        if f.is_file():
+            phowhisper[split] = {json.loads(line)["audio"]: json.loads(line)["hyp"] for line in f.read_text(encoding="utf-8").splitlines() if line.strip()}
 
     chosen: list[str] = []
     for tag in PRIORITY:  # 10 per priority tag, then fill with random bench clips
@@ -62,7 +67,11 @@ def main() -> None:
         with sf.SoundFile(p) as f:
             dur = f.frames / f.samplerate
         rel = Path("../../data/train+public_test") / split / s["audio"]
-        hyp_html = "".join(f"<div class='hyp'><b>{html.escape(m)}</b> {html.escape(h)}</div>" for m, h in sorted(hyps.get(s["id"], {}).items()))
+        row_hyps = dict(hyps.get(s["id"], {}))
+        ph = phowhisper.get(split, {}).get(s["audio"])
+        if ph is not None:
+            row_hyps["phowhisper"] = ph
+        hyp_html = "".join(f"<div class='hyp'><b>{html.escape(m)}</b> {html.escape(h)}</div>" for m, h in sorted(row_hyps.items()))
         ref = html.escape(s.get("audio_text", "")) or "<i>public_test: no transcript, write what you hear in notes</i>"
         tag_txt = " ".join((t or {}).get("linguistic", []))
         items.append(f"""
