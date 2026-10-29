@@ -348,7 +348,7 @@ footer { font-size: 13px; color: var(--muted); border-top: 1px solid var(--line)
     <ul>
       <li>Trọng số model nằm trong image, chạy offline; nhiệt độ 0 và seed cố định để kết quả lặp lại được.</li>
       <li>Chạy toàn bộ public test bên trong Docker trên máy sạch; so file nộp với bản chạy ngoài.</li>
-      <li>Đo thời gian và VRAM; phải xong 600 mẫu trong giới hạn BTC đặt ra (cần hỏi BTC).</li>
+      <li>Đo thời gian và VRAM: BTC chấm trên 1x A30 (24GB) + Xeon 16 core + 64GB RAM, 30s/mẫu (quá giờ = 0 điểm cho mẫu đó); 634 mẫu public_test trong luật thực tế, không phải 600.</li>
       <li>Có code train, code inference, dữ liệu tổng hợp; checksum và link Google Drive công khai.</li>
     </ul>
     <div class="gate">Docker sinh ra submission giống hệt bản đã nộp public, trong thời gian cho phép.</div>
