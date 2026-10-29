@@ -271,9 +271,9 @@ U = số call nộp không khớp (kể cả call bị từ chối vì sai schem
     <tbody>
       <tr><td>Phân tích dữ liệu</td><td>Python 3.10+, pandas, Jupyter</td><td>DuckDB cho truy vấn nhanh trên JSONL</td><td>zaic_tools chỉ dùng stdlib, dễ ghép vào notebook</td></tr>
       <tr><td>Nghe và gán nhãn audio</td><td>Label Studio hoặc một trang HTML nghe nhanh</td><td>Audacity cho clip khó</td><td>cần ghi lại vùng miền, nhiễu, từ khó cho từng clip</td></tr>
-      <tr><td>ASR</td><td>PhoWhisper-large (Whisper fine-tune tiếng Việt)</td><td>Whisper large-v3 / turbo; chạy bằng faster-whisper</td><td>đo WER và lỗi thực thể trên train trước khi chọn</td></tr>
+      <tr><td>ASR</td><td><b>PhoWhisper-large</b> (chốt, ~1.55B, Whisper fine-tune tiếng Việt)</td><td>Whisper large-v3 / turbo; chạy bằng faster-whisper</td><td>đo WER và lỗi thực thể trên train trước khi chọn (Stage 1.2)</td></tr>
       <tr><td>ASR end-to-end (thử nghiệm)</td><td>pipeline ASR → LLM (đã chọn)</td><td>Audio LLM dạng Qwen-Omni</td><td>omni thường &gt;6B riêng nó, khó vừa ngân sách tổng; để dành Stage 5 nếu còn thời gian</td></tr>
-      <tr><td>LLM agent</td><td>Qwen3 instruct &lt;5B (vd. ~4B), tool calling gốc</td><td>Gemma 3, Qwen2.5 cùng tier nhỏ</td><td>ràng buộc BTC: LLM &lt;5B, context &le;16K, offline</td></tr>
+      <tr><td>LLM agent</td><td><b>Qwen3-4B-Instruct</b> (chốt), tool calling gốc</td><td>Gemma 3, Qwen2.5 cùng tier nhỏ</td><td>&lt;5B theo luật BTC; serve qua vLLM = OpenAI-compatible tool-calling, tái dùng được lifemate/llm.py</td></tr>
       <tr><td>Serving</td><td>vLLM + structured output (JSON theo schema)</td><td>transformers generate</td><td>ép JSON hợp lệ, giảm call bị từ chối</td></tr>
       <tr><td>Huấn luyện</td><td>LoRA / QLoRA với TRL hoặc Unsloth</td><td>LLaMA-Factory</td><td>1.545 mẫu: fine-tune toàn bộ không đáng</td></tr>
       <tr><td>Preference / RL</td><td>DPO, GRPO (TRL hoặc verl), reward = điểm chính thức chạy lại trên env train</td><td>rejection sampling + SFT</td><td>env tất định nên reward chính xác</td></tr>

@@ -21,11 +21,12 @@ tools like `scripts/llm_tag.py` (explicitly allowed: "synthetic data... during d
 never used at inference) or to a local harness smoke-test that is never uploaded to the portal.
 
 - **Model size**: whole system (ASR + LLM + anything else, e.g. a retrieval embedder) < 6B params total.
-  The LLM itself < 5B params, context <= 16K (16,384) tokens. PhoWhisper-large is ~1.55B, so the LLM budget
-  is roughly <4B if every other component (ASR, any embedder) is to fit under the 6B ceiling too.
-  This replaces the earlier "Qwen3 8B to 32B" idea in the brief - neither size is legal. Target a Qwen3
-  tier under 5B (e.g. ~4B), and double-check context budget: Stage 2.3 measured ~5.5k-16k tokens per
-  prompt on real samples (tool schemas + history), some samples may need trimming to stay under 16K.
+  The LLM itself < 5B params, context <= 16K (16,384) tokens. **Locked choice (2026-10-30): PhoWhisper-large
+  (~1.55B) + Qwen3-4B-Instruct (~4B), total ~5.5B**, leaving ~0.45B headroom for Stage 2 extras (B2
+  retrieval must not add a real embedding model on top, or it has to come out of that headroom).
+  Context budget: Stage 2.3 measured ~5.5k-16k tokens per prompt on real samples (tool schemas + history);
+  Qwen3-4B natively supports well beyond 16K, so the 16K cap is a rules limit, not a model limit - some
+  samples may still need trimming (truncate older history / tool descriptions) to stay under it.
 - **Offline, no external API/service at inference.** Scoring hardware: 1x NVIDIA A30 (24GB), 16-core Xeon
   Gold 6442Y, 64GB RAM, provided by the organisers (not server rtx, which is only for our own dev/fine-tune).
   30s per sample timeout; a sample that times out or errors scores 0.
