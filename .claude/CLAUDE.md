@@ -15,6 +15,7 @@ Read these first when resuming, in this order:
 - LLM prompts are written by the user in `prompts/`; code only reads them. Taxonomy definitions: `taxonomy/taxonomy.json`.
 - Never read `data/**/<split>_environment/` directly; use `lifemate.data.tool_env()` (competition rule).
 - Commits: no co-author line.
+- Running scripts: always smoke-test first (small `--n`), then optimise runtime using real measured numbers (batch size, VAD, compute type, caching). Stay at "just right": one or two measured fixes, no over-engineering or endless tuning.
 
 ## Environment to rebuild on a new server
 

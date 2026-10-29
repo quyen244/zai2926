@@ -32,9 +32,9 @@ Reports: `reports/stage1_summary.md` (start here), `stage1_labels.md`, `stage1_t
 
 ## Stage 2 - Data processing (next)
 
-- [ ] 2.1 ASR pipeline with PhoWhisper-large on final + history turns of all splits; cache to `work/asr/`.
+- [~] 2.1 ASR pipeline (`scripts/asr_run.py`): public_test 1933/1933 done, train in progress (2100/5036, resumable). Output `work/asr/phowhisper/<split>.jsonl`.
 - [ ] 2.1 Hallucination guard (detect filler phrase / low logprob -> re-decode with VAD / normalisation).
-- [ ] 2.2 Text normaliser (money, time, dates relative to `current_time`) with unit tests.
+- [x] 2.2 Text normaliser (`lifemate/normalize.py`: numbers/money/clock time/relative dates), 26 tests. Checked on train gold args: ISO dates found in 423/603 (the rest mostly default to the current date, left to the prompt builder); money/time misses are mostly amounts computed from app data or part-of-day inferred from "tối nào".
 - [ ] 2.3 `build_prompt(sample)`: installed-tool schemas, compact history with IDs, context.
 - [ ] 2.4 SFT trajectories from train (reference + ASR text variants), replay-verified.
 

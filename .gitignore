@@ -21,3 +21,4 @@ submission*.jsonl
 checkpoints/
 *.safetensors
 *.bin
+venv/
