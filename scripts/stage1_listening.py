@@ -103,7 +103,8 @@ tr.done td{{background:#eef6f1}} audio{{width:100%}}
 </style></head><body>
 <header><div class="row"><b>LifeMate listening sheet</b> <span id="count"></span> <button id="export">Export CSV</button>
 <small>Answers are saved in this browser automatically.</small></div>
-<small>notes convention: <b>[ellipsis]</b> ref thêm từ không nói ra &middot; <b>[mishear]</b> nghe nhầm thật &middot; <b>[code_switch]</b> ASR lẫn từ tiếng Anh/tên riêng</small></header>
+<small>notes convention: <b>[ellipsis]</b> ref thêm từ không nói ra &middot; <b>[mishear]</b> nghe nhầm thật &middot; <b>[code_switch]</b> ASR lẫn từ tiếng Anh/tên riêng</small>
+<small><b>Clarity</b> = cảm nhận tổng thể nghe lần đầu (easy/hard/unintelligible), gộp cả noise/volume/speed/phát âm &middot; <b>hard words</b> = từ khó nghe trong chính audio (không so với ref hay ASR) -&gt; dùng làm từ điển hotword cho ASR sau này</small></header>
 <table>{''.join(items)}</table>
 <script>
 const KEY='lifemate-listening-v1';
