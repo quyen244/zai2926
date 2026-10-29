@@ -29,9 +29,14 @@ def main() -> None:
     OUT.mkdir(parents=True, exist_ok=True)
     rng = random.Random(11)
     train = {s["id"]: s for s in load_samples("train")}
-    tags = {json.loads(line)["id"]: json.loads(line) for line in (PROJECT / "work" / "tags.jsonl").read_text(encoding="utf-8").splitlines()}
+    tags_path = PROJECT / "work" / "tags.jsonl"
+    if not tags_path.is_file():
+        raise SystemExit(f"{tags_path} not found: run `python scripts/stage1_taxonomy.py` first (work/ is machine-local, not synced by git)")
+    tags = {json.loads(line)["id"]: json.loads(line) for line in tags_path.read_text(encoding="utf-8").splitlines()}
     bench_path = PROJECT / "work" / "asr" / "bench_ids.json"
     pool = json.loads(bench_path.read_text(encoding="utf-8")) if bench_path.is_file() else sorted(train)
+    if len(pool) < 120:
+        print(f"warning: pool is only {len(pool)} ids ({bench_path} looks stale/partial); picking from it anyway")
     hyps: dict[str, dict[str, str]] = {}
     for f in sorted((PROJECT / "work" / "asr").glob("*.jsonl")):
         for line in f.read_text(encoding="utf-8").splitlines():

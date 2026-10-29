@@ -8,3 +8,12 @@ Placeholders (double braces):
                 "history" ([{"role": "user"|"assistant", "text"}], last turns only, truncated)}
   The taxonomy placeholders of the system prompt also work here.
 -->
+Classify the following {{n}} samples according to the system rules.
+
+## Taxonomy reference
+{{taxonomy_json}}
+
+## Samples
+{{samples}}
+
+Return exactly {{n}} results in the required JSON format, preserving every input ID.

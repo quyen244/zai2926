@@ -24,7 +24,7 @@ Reports: `reports/stage1_summary.md` (start here), `stage1_labels.md`, `stage1_t
   - [x] Whole-utterance hallucination: root cause per quyen (listened to the clips) is simply that those clips are hard to hear/understand, not a pipeline artifact. On PhoWhisper (the model used from Stage 2 on) it is 1.0% (4/400); accepted, no fix planned.
 - [x] 1.3 Label anatomy: gold read-call conventions, ID provenance (25% from history), ask patterns, empty-gold subtypes.
 - [~] 1.4 Taxonomy: regex tags for all train (`work/tags.jsonl`); LLM tagger ready (`scripts/llm_tag.py`, `taxonomy/taxonomy.json`).
-  - [ ] Write the prompts in `prompts/taxonomy_tagging.{system,user}.md` (team).
+  - [x] Write the prompts in `prompts/taxonomy_tagging.{system,user}.md` (quyen), with 2 invented few-shot examples (medium + hard, incl. a prompt-injection-resistance case). Dry-run renders cleanly, no placeholder errors.
   - [ ] Run 40 samples, check quality, then all train.
   - [ ] Hand-check `work/tags_review.csv` (200 rows) for regex precision.
 - [x] 1.5 Schema and env: shared app schemas identical train vs public; 11 public-only apps; silent failures return `ok: true, done: false`.
