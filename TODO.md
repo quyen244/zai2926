@@ -35,7 +35,9 @@ Reports: `reports/stage1_summary.md` (start here), `stage1_labels.md`, `stage1_t
 - [x] 2.1 ASR pipeline (`scripts/asr_run.py`): public_test 1933/1933 and train 5036/5036 clips (final + history user turns), no empty hypothesis. Output `work/asr/phowhisper/<split>.jsonl`.
 - [x] 2.1 Hallucination guard (flag -> re-decode with peak-norm + VAD): fired on 4 train clips and 0 public_test clips; 0 empty, 0 with compression_ratio > 2.4 after the guard.
 - [x] 2.2 Text normaliser (`lifemate/normalize.py`: numbers/money/clock time/relative dates), 26 tests. Checked on train gold args: ISO dates found in 423/603 (the rest mostly default to the current date, left to the prompt builder); money/time misses are mostly amounts computed from app data or part-of-day inferred from "tối nào".
+  - [x] 2026-11-04: lowercase ASR fix. PhoWhisper output has no capitals, so "anh mười" became "anh 10" and "cô mai" a tomorrow hint. Now a lone number word after a kin word stays unless a unit follows, and "mai" after "cô"/"cô giáo" (after "chị" unless "có" or a number follows) is a name. On all 5036 train user turns: false tomorrow hints on ASR 46 -> 23, kin-number names kept 58/64 -> 61/64, real tomorrow hints kept 514 -> 514, reference-text hints unchanged. 7 new tests.
 - [x] 2.3 `build_prompt(sample)` (`lifemate/prompt.py`): system rules + context, tools of installed apps only, history replayed as real tool-calling turns. `scripts/prompt_mock.py` prints a labelled mock (SYSTEM/TOOLS/MESSAGES) for review; 4 structural tests pass. Median prompt ~16k chars / ~5.5k tokens on a 4-history-turn train sample.
+  - [x] 2026-11-04: the system rules told the model to ask "bằng lời" (in words), but asking is scored only as a `sys.ask_missing_info` call (217/1545 gold use it; dropping that call on those samples scores 54.3 on average, 27.6% of them 0). Rule now names the tool, its arguments, and "do the parts that are complete first, then ask and stop" (as the gold does). Test added; effect on a real model not measured yet.
 - [ ] 2.4 SFT trajectories from train (reference + ASR text variants), replay-verified.
 
 ## Stage 3 - Baselines
@@ -52,6 +54,7 @@ Reports: `reports/stage1_summary.md` (start here), `stage1_labels.md`, `stage1_t
 ## Stage 4 - Upgrades I
 
 - [ ] ASR fine-tune (LoRA) on ~5000 train utterances; contextual biasing; N-best rescoring.
+  - [x] 2026-11-02: decode-time hotwords tested and rejected. 60 English/brand terms from cv folds 1-4, tested on fold 0 (127 clips with such terms + 80 without): terms kept 78/180 -> 86/180, but WER 0.279 -> 0.306 on those clips and 0.214 -> 0.296 on the controls; `initial_prompt` gives identical output. A very short list (SMS, Zalo, SJC) is untested.
 - [ ] Agent SFT (LoRA) with schema shuffling; synthetic data for unseen apps verified in env.
 - [ ] Act / ask / empty decision tuned on the official score.
 

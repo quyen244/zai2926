@@ -5,6 +5,10 @@
 
 Deliberately conservative: a lone number word ("một cái", "không đủ", "sáng mốt") stays as it is unless a unit or
 magnitude word makes the reading unambiguous. Capitalised number words ("anh Mười") are names and are never converted.
+ASR output is all lowercase, so the capital is gone there: a lone number word right after a kin word ("anh mười") is
+also kept unless a unit follows ("chị mười giờ" -> "chị 10:00"), and "mai" after "cô" or "cô giáo" is a name, not
+tomorrow; after "chị" too, unless "có" or a number follows ("xem giúp chị mai có cuộc hẹn"). On train ASR, 3/3 of the
+first kind and 28/29 of the second are names.
 Clock times without a part of day keep the hour as spoken ("ba giờ" -> 03:00); the caller decides what that means.
 """
 from __future__ import annotations
@@ -23,6 +27,7 @@ NEXT_UNITS = {"giờ", "phút", "giây", "rưỡi", "đồng", "độ", "phần"
               "tiếng", "tuổi", "điểm", "sao", "%"}
 PREV_UNITS = {"tháng", "mùng", "mồng", "ngày", "hôm", "số", "lúc"}
 PERIODS = ("sáng", "trưa", "chiều", "tối", "đêm", "khuya")
+KIN_WORDS = {"anh", "chị", "chú", "cô", "bác", "ông", "bà", "dì", "cậu", "em", "thím", "mợ", "dượng"}
 TOKEN = re.compile(r"\w+|[^\w\s]", re.UNICODE)
 
 
@@ -83,7 +88,8 @@ def _words_to_digits(text: str) -> str:
             nxt = toks[j][0].lower() if j < len(toks) else ""
             prv = toks[i - 1][0].lower() if i else ""
             has_mag = any(r in MAGNITUDES or r in TENS or r == "mười" for r in run)
-            ok = has_mag or (nxt in NEXT_UNITS and run != ["mốt"]) or (prv in PREV_UNITS and run not in (["mốt"], ["không"]))
+            name_slot = prv in KIN_WORDS and len(run) == 1 and nxt not in NEXT_UNITS  # lowercase "anh mười" is a name
+            ok = not name_slot and (has_mag or (nxt in NEXT_UNITS and run != ["mốt"]) or (prv in PREV_UNITS and run not in (["mốt"], ["không"])))
             has_digit = any(r in DIGITS or r == "mười" for r in run)
             v = _run_value(run) if ok and has_digit and run != ["không"] else None
             if v is not None:
@@ -160,7 +166,7 @@ _REL = [
     (re.compile(r"\b(?:hôm|bữa)\s+qua\b|\b(?:sáng|trưa|chiều|tối|đêm)\s+qua\b", re.I), -1),
     (re.compile(r"\b(?:hôm|bữa)\s+kia\b", re.I), -2),
     (re.compile(r"\bngày\s+(?:mốt|kia)\b|\b(?:sáng|trưa|chiều|tối)\s+mốt\b|\bmốt\b", re.I), 2),
-    (re.compile(r"\bngày\s+mai\b|\b(?:sáng|trưa|chiều|tối)\s+mai\b|(?<!\w)mai(?!\w)|(?:^|(?<=[.!?…]\s))Mai(?=\s+[a-zà-ỹ0-9])"), 1),  # case-sensitive: other "Mai" is a name
+    (re.compile(r"\bngày\s+mai\b|\b(?:sáng|trưa|chiều|tối)\s+mai\b|(?<!\bcô )(?<!\bgiáo )(?<!\w)mai(?!\w)(?:(?<!\bchị mai)|(?=\s+(?:\d|(?:có|giờ|một|hai|ba|bốn|năm|sáu|bảy|tám|chín|mười)\b)))|(?:^|(?<=[.!?…]\s))Mai(?=\s+[a-zà-ỹ0-9])"), 1),  # case-sensitive: other "Mai" is a name
     (re.compile(r"\btuần\s+(?:sau|tới)\b", re.I), 7),
 ]
 _DMY = re.compile(r"\b(?:ngày|hôm|mùng|mồng)?\s*(\d{1,2})\s*(?:/|\s+tháng\s+)(\d{1,2})(?:\s*/\s*(\d{4}))?\b", re.I)

@@ -28,6 +28,13 @@ def test_tools_always_include_ask_missing_info(sample_with_history):
     assert "sys.ask_missing_info" in names
 
 
+def test_system_prompt_asks_through_the_tool(sample_with_history):
+    # asking is scored as a tool call: a question written as plain text matches nothing in the gold list
+    system = build_prompt(sample_with_history, "train", sample_with_history["audio_text"])["system"]
+    assert "sys.ask_missing_info" in system
+    assert "bằng lời thay vì" not in system
+
+
 def test_tool_specs_are_valid_json_schema(sample_with_history):
     prompt = build_prompt(sample_with_history, "train", sample_with_history["audio_text"])
     for t in prompt["tools"]:

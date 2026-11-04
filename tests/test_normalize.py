@@ -36,3 +36,25 @@ def test_colloquial_money_and_kept_day_word(src, want):
 
 def test_sentence_initial_mai_is_tomorrow():
     assert resolve_dates("Mai mưa thì huỷ", NOW)[0]["date"] == "2026-11-17"
+
+
+# ASR output is all lowercase, so the capital letter that marks a name is gone (real PhoWhisper hypotheses on train)
+@pytest.mark.parametrize("src,want", [
+    ("anh mười chở mít tới mà hổng rành đường", "anh mười chở mít tới mà hổng rành đường"),
+    ("chị mười giờ sáng mai", "chị 10:00 sáng mai"), ("cho chị một tiếng trước lịch họp", "cho chị 1 tiếng trước lịch họp"),
+    ("chuyển anh hai triệu rưỡi", "chuyển anh 2500000"),
+])
+def test_lowercase_number_name_after_kin_word(src, want):
+    assert normalize_text(src) == want
+
+
+@pytest.mark.parametrize("src", ["chuyển ví cho cô mai số tiền điện", "nhắn sms cho cô giáo mai bảo chị đóng rồi",
+                                 "chuyển cho chị mai bên hậu cần năm chục nghìn"])
+def test_lowercase_name_mai_is_not_tomorrow(src):
+    assert resolve_dates(src, NOW) == []
+
+
+@pytest.mark.parametrize("src", ["đặt báo thức sáng mai giùm anh mai đón đoàn sớm", "bài đó nghe em mai chị đọc",
+                                 "xem giúp chị mai có cuộc hẹn nào chưa", "nhắc chị mai chín giờ sáng bán vàng"])
+def test_mai_that_means_tomorrow_is_kept(src):
+    assert {d["date"] for d in resolve_dates(normalize_text(src), NOW)} == {"2026-11-17"}
