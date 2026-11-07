@@ -1,0 +1,13 @@
+{
+  "id": "quyenuit24/lifemate-dense-retrieval",
+  "title": "lifemate-dense-retrieval",
+  "code_file": "run.py",
+  "language": "python",
+  "kernel_type": "script",
+  "is_private": true,
+  "enable_gpu": true,
+  "enable_internet": true,
+  "dataset_sources": ["quyenuit24/lifemate-data"],
+  "competition_sources": [],
+  "kernel_sources": []
+}

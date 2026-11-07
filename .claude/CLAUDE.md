@@ -10,9 +10,58 @@ Read these first when resuming, in this order:
 
 ## Machines (how the user names them)
 
-- "server rtx": the RTX 5060 Ti GPU server work session.
+- "server" (plain, from 2026-11-04 on): the Kaggle server. GPU jobs run there as Kaggle kernels pushed with the
+  `kaggle` CLI (credential already in `C:/Users/Admin/.kaggle/`, never print or copy it); do not run models on "local".
+  Job sources live in `kaggle/<job>/` (script + `kernel-metadata.json`, private kernels).
+- "server rtx": the RTX 5060 Ti GPU server work session (only when the user says "rtx").
 - "local": the user's current workstation (this Windows machine).
-- "kaggle server": work done on Kaggle.
+- "kaggle server": same as "server".
+
+## How the user wants runs handled (2026-11-05)
+
+- **Never launch a run on your own.** Before running anything (a Kaggle job, an upload, a long script), draw the flow
+  first (small hand-drawn HTML artifact: input -> each step -> output, what runs where, what is cached) and wait
+  for the user's explicit go. Preparing files locally is fine; pushing/uploading/executing is not, until approved.
+- **Run, don't benchmark.** The latency question is closed for now (numbers below). Do not add timing probes or
+  re-measure engines unless the user asks; spend GPU time on producing results (baselines, scores).
+- **Two GPUs = data sharding (data parallelism).** Kaggle "T4 x2": one model copy per GPU, samples split in half
+  (GPU 0 gets one shard, GPU 1 the other), both start at once and run independently, results merged and scored
+  at the end. Not one job per GPU, not tensor parallel (a 4B AWQ model fits one T4).
+- **Cache results so nothing is recomputed.** Each finished sample is written to a per-sample cache keyed by
+  (model, variant, sample id) and fed back to the next job as input, so a larger run (e.g. all train after a
+  100-sample trial) only runs the samples not yet done.
+- **Staged runs:** small trial first (100 train samples), check it, then the full split.
+- Data may be uploaded to a **private** Kaggle dataset when a job needs it (approved 2026-11-05).
+- **Every experiment result is reported with the error EDA table (2026-11-07).** After any run (baseline, prompt
+  change, new model), merge its cache, run `scripts/error_eda.py` and show the user its table (% of the run's
+  samples per group: 1 wrong args, 1a extra / 1b missing / 1c wrong value, 2 under, 3 over, 4 wrong tool,
+  5 no-tool, 6 lookup skip, 7 multi-step, hash) next to the score, and against the previous run when there is one.
+  Group definitions live in `lifemate/eda.py`. Drill-down: `scripts/error_ids.py` (ids per group, default 1a 1b 2 3)
+  and `scripts/compare_sample.py <id> --text gold|asr` (gold vs predicted side by side with the reason).
+
+## Kaggle GPU jobs: fixed recipe (decided 2026-11-04, do not re-litigate)
+
+- CLI: `.venv/Scripts/kaggle.exe` (not on PATH). Push `kaggle kernels push -p kaggle/<job> --accelerator NvidiaTeslaT4`,
+  poll `kernels status <id>`, fetch `kernels output <id> -p work/kaggle/<job>`.
+- On Windows, run the CLI from inside the folder with `-p .`: a relative `-p work/x` breaks the upload temp path.
+- Data for jobs: private dataset `quyenuit24/lifemate-data` (`scripts/kaggle_pack.py` builds it, then
+  `datasets version -p . -m msg`); baseline job `kaggle/baseline/` (2 shards, result cache, merge with
+  `scripts/kaggle_merge_cache.py`).
+- GPU: push with `--accelerator NvidiaTeslaT4`, which is "GPU T4 x2" (two T4 visible, seen in nvidia-smi). Asking for `NvidiaL4` silently falls back to a T4 (seen twice).
+- The T4 is compute capability 7.5: no FlashAttention 2. Always use vLLM with
+  `VLLM_ATTENTION_BACKEND=TRITON_ATTN_VLLM_V1`, set in `os.environ` before `import vllm`, unconditionally.
+  Do not use the default (FlexAttention: 12 prompts batched 98 s vs 22 s with Triton) and do not use HF transformers
+  (SDPA math path, OOM as soon as prompts are batched).
+- Model: `Qwen/Qwen3-4B-AWQ` (pre-quantised; loads ~100 s faster than bitsandbytes and is faster at step 1).
+- Pins: `vllm==0.10.2` then `transformers==4.57.1` (vLLM 0.10.2 breaks on transformers 5.x tokenizer API).
+- Load: `LLM(model=..., max_model_len=16384, gpu_memory_utilization=0.88, dtype="half")`; Qwen3 chat template with
+  `enable_thinking=False`. Loading costs ~136 s (torch.compile + CUDA graphs).
+- Measured on T4 (kaggle/vllm_awq v1, 2026-11-05): one agent step ~22 s = prefill of a ~4.8k-token prompt ~11 s
+  (~440 tok/s) + decode ~165 ms per token, independent of context length and of batch size. No warm-up cost
+  (fresh prompts as slow as repeated ones). Prefix cache works (cached prompt: ~5 s) but 12 x 4.8k prompts overflow it.
+  Batched runs after earlier passes look fast only because of prefix-cache hits; do not read them as per-request cost.
+- T4 latency is not the A30's: the scoring A30 (sm80) has FlashAttention 2; use T4 numbers for relative comparisons only.
+- Template job: `kaggle/vllm_awq/` (results of earlier benches in `work/kaggle/`).
 
 ## Competition constraints (official regulations, received 2026-10-30)
 
@@ -48,6 +97,11 @@ never used at inference) or to a local harness smoke-test that is never uploaded
 
 ## Rules for this repo
 
+- **Human-friendly, easy-on-the-eyes output (2026-11-07).** Everything a script prints or writes for the user to read
+  (traces, sample views, submission lines, gold vs predicted) is laid out for reading and comparing, never as a raw
+  one-line JSON dump: one tool call per line as `    -> name {args}`, its result on the next line as `         = {...}`
+  (the `scripts/show_gt.py` layout), a short header line per sample, gold and predicted in the same layout so they
+  line up. Raw JSON only behind a flag (e.g. `trace_sample.py --request`).
 - The repo `quyen244/zai2926` is PUBLIC. Never commit competition data or anything per-sample derived from it (transcripts, labels, hashes, ASR output): those go in `work/` (git-ignored). Reports hold aggregates only.
 - Secrets live in `.env` (git-ignored): `OPENAI_API_KEY`, optional `LLM_MODEL` (default `gpt-6-luna`; stay on the luna tier or cheaper), `LLM_RPM`, `LLM_TPM`.
 - LLM prompts are written by the user in `prompts/`; code only reads them. Taxonomy definitions: `taxonomy/taxonomy.json`.

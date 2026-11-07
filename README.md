@@ -20,6 +20,7 @@ Per-sample derived files (transcripts, gold hashes, ASR output) are written to `
 | `scripts/stage1_taxonomy.py` | tags every train sample -> `reports/stage1_taxonomy.md` |
 | `scripts/asr_bench.py`, `scripts/asr_report.py` | ASR benchmark -> `reports/stage1_asr.md` |
 | `scripts/stage1_listening.py` | local listening sheet -> `work/listening/index.html` |
+| `docs/scripts.md` | every script, what it is for, one example command each |
 | `splits/` | split definitions (sample ids only) |
 | `reports/` | aggregate findings (no transcripts) |
 

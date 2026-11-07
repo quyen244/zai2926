@@ -109,12 +109,33 @@ class Usage:
             self.completion_tokens += u.get("completion_tokens", 0)
 
 
+def tools_body(model: str, openai: bool, system: str, messages: list[dict], tools: list[dict], max_tokens: int = 1000,
+               temperature: float = 0) -> dict:
+    """The exact JSON body LLM.chat_tools POSTs to /chat/completions (scripts/trace_sample.py prints it as is)."""
+    if openai:
+        tools = [{**t, "function": {**t["function"], "name": _api_name(t["function"]["name"])}} for t in tools]
+        messages = [_api_message(m) for m in messages]
+    body = {"model": model, "messages": [{"role": "system", "content": system}] + messages, "tools": tools, "tool_choice": "auto",
+            "temperature": temperature, "max_completion_tokens": max_tokens}
+    if openai:
+        body["reasoning_effort"] = "none"
+    else:  # vLLM: Qwen3 thinks by default; the agent must answer with a tool call straight away
+        body["chat_template_kwargs"] = {"enable_thinking": False}
+    return body
+
+
 class LLM:
-    def __init__(self, model: str | None = None, rpm: float | None = None, tpm: float | None = None, timeout: float = 180):
+    def __init__(self, model: str | None = None, rpm: float | None = None, tpm: float | None = None, timeout: float = 180,
+                 base_url: str | None = None):
+        """base_url (or LLM_BASE_URL): any OpenAI-compatible server, e.g. vLLM at http://host:8000/v1. Without it the
+        client talks to OpenAI, which needs OPENAI_API_KEY; a self-hosted server needs no key."""
         load_env()
-        self.key = os.environ.get("OPENAI_API_KEY")
+        base_url = base_url or os.environ.get("LLM_BASE_URL")
+        self.openai = not base_url
+        self.url = URL if self.openai else base_url.rstrip("/") + "/chat/completions"
+        self.key = os.environ.get("OPENAI_API_KEY") if self.openai else os.environ.get("LLM_API_KEY", "EMPTY")
         if not self.key:
-            raise RuntimeError("OPENAI_API_KEY missing: put it in .env at the project root")
+            raise RuntimeError("OPENAI_API_KEY missing: put it in .env at the project root (or set LLM_BASE_URL)")
         self.model = model or os.environ.get("LLM_MODEL", "gpt-6-luna")
         self.limiter = RateLimiter(rpm or float(os.environ.get("LLM_RPM", 1000)), tpm or float(os.environ.get("LLM_TPM", 400_000)))
         self.timeout = timeout
@@ -130,7 +151,7 @@ class LLM:
         bad_json = 0
         for attempt in range(max_retries + 1):
             self.limiter.acquire(est)
-            req = urllib.request.Request(URL, data=data, headers={"Authorization": f"Bearer {self.key}", "Content-Type": "application/json"})
+            req = urllib.request.Request(self.url, data=data, headers={"Authorization": f"Bearer {self.key}", "Content-Type": "application/json"})
             try:
                 with urllib.request.urlopen(req, timeout=self.timeout) as r:
                     d = json.load(r)
@@ -163,23 +184,21 @@ class LLM:
         stays a JSON string, same wire shape lifemate.prompt builds, so the caller appends it to `messages` as is.
         Tool names use the competition's "app.tool" form everywhere in `tools`/`messages`/the returned message;
         OpenAI's function name pattern rejects the dot, so it is swapped for "__" only on the wire, both ways,
-        invisibly to the caller (lifemate.agent never sees the sanitised form).
+        invisibly to the caller (lifemate.agent never sees the sanitised form). A self-hosted model (base_url) gets
+        the real names, the ones it is fine-tuned on, and no OpenAI-only field such as reasoning_effort.
         temperature=0 for reproducible agent runs. Retries rate-limit and server errors like chat_json."""
-        api_tools = [{**t, "function": {**t["function"], "name": _api_name(t["function"]["name"])}} for t in tools]
-        api_messages = [_api_message(m) for m in messages]
-        full_messages = [{"role": "system", "content": system}] + api_messages
-        body = {"model": self.model, "messages": full_messages, "tools": api_tools, "tool_choice": "auto",
-                "temperature": temperature, "max_completion_tokens": max_tokens, "reasoning_effort": "none"}
+        body = tools_body(self.model, self.openai, system, messages, tools, max_tokens, temperature)
         data = json.dumps(body).encode("utf-8")
         est = len(data) // 3 + max_tokens
         for attempt in range(max_retries + 1):
             self.limiter.acquire(est)
-            req = urllib.request.Request(URL, data=data, headers={"Authorization": f"Bearer {self.key}", "Content-Type": "application/json"})
+            req = urllib.request.Request(self.url, data=data, headers={"Authorization": f"Bearer {self.key}", "Content-Type": "application/json"})
             try:
                 with urllib.request.urlopen(req, timeout=self.timeout) as r:
                     d = json.load(r)
                 self.usage.add(d.get("usage", {}))
-                return _real_message(d["choices"][0]["message"])
+                msg = d["choices"][0]["message"]
+                return _real_message(msg) if self.openai else msg
             except urllib.error.HTTPError as e:
                 if e.code not in RETRY_STATUS or attempt == max_retries:
                     raise RuntimeError(f"OpenAI HTTP {e.code}: {e.read()[:300]!r}") from None

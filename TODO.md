@@ -13,6 +13,7 @@ Legend: `[x]` done and verified, `[~]` partly done, `[ ]` not started.
 - [x] Splits: `splits/cv5.json`, `splits/leave_app_out.json` (9 held-out train-only apps, 241 val samples).
 - [x] Submission validator (`lifemate/gold.py: validate_submission`).
 - [ ] Confirm the scorer assumptions (empty arg = absent, token-F1 tokenisation) against the first public leaderboard score.
+  - [ ] **Extra optional arguments** (pred has every gold arg plus more, e.g. train_0007 `label`, `repeat`): `lifemate/scoring.py` requires the same argument set, so the call does not match. The rules only say "arg thường giống hệt, arg fuzzy token-F1 > 0.6". On the 2026-11-05 Qwen run this choice alone moves B0 5.33 -> 17.17 and B1 2.67 -> 6.83. Ask the organisers or settle it with the leaderboard; until then keep strict and make the prompt forbid unrequested optional args.
 
 ## Stage 1 - Understand the data (mostly done)
 
@@ -47,8 +48,10 @@ Reports: `reports/stage1_summary.md` (start here), `stage1_labels.md`, `stage1_t
   - **Compliance note (2026-10-30 regs)**: the official LLM must be < 5B params, fully offline, no external API at inference. The current `gpt-6-luna` runs are internal harness validation only - not submitted to the portal, not the final architecture. See `.claude/CLAUDE.md` "Competition constraints".
 - [x] Model locked 2026-10-30: **PhoWhisper-large (~1.55B) + Qwen3-4B-Instruct (~4B)**, ~5.5B total, under the 6B cap. See the "ASR & Agent Training Plan" artifact for architecture + fine-tune data design.
 - [ ] Serve Qwen3-4B locally on server rtx (vLLM, OpenAI-compatible tool-calling endpoint); verify context fits <=16K tokens on real prompts (Stage 2.3 measured up to ~16k chars / ~5.5k tokens on a 4-turn sample - check the longer-history tail too).
-- [ ] Re-run B0/B1 on Qwen3-4B (server rtx, local inference - no API).
+- [~] Re-run B0/B1 on Qwen3-4B. 2026-11-05, Kaggle T4 x2 (`kaggle/baseline/`, Qwen3-4B-AWQ, 2 shards, 36 min), first 100 train samples: **B0 5.33, B1 2.67** (hash ok 25 / 16), 0 failures. Main errors: invented optional args (34 calls had all gold args plus extras), stopping after the first read (175 predicted vs 275 gold calls), extra sys.ask_missing_info (26), phone leading zero lost. Results cached in `work/kaggle/cache/`. Full train not run yet.
+  - 2026-11-07 QVikhr-3-4B-Instruction (Qwen3-4B fine-tune for RU/EN, FP16, `kaggle/vikhr/`, same code a209ba03 and samples): **B0 7.17, B1 3.00** (hash ok 29 / 18), 0 failures, 93 min run (2.6x slower than AWQ, KV cache 28k tokens/GPU). Paired vs Qwen: B0 +1.83 (95% bootstrap CI -0.83..+4.50, better on 5 samples, worse on 1), B1 +0.33 (CI -1.67..+2.33). Not a significant gain; more extra optional args (1a 66% vs 51%). See `reports/error_eda.md`.
 - [ ] B2 + validate-before-call, `done` check, step cap, few-shot retrieval (retrieval must not add real params if it would blow the 6B budget - no embedding model, or a tiny one counted in).
+  - 2026-11-07 tool-list filtering measured offline on 1374 train samples, ASR text, name + description context (`reports/retrieval_dense.md`, `reports/retrieval_bm25.md`): BGE-M3 best app@5 81.4% sample recall (19.5 tools kept) vs BM25 78.1%; tool@20 75.0% vs 69.9%. No filter is near the ~100% recall it needs (a dropped tool = 0); BGE-M3 (~568M) would also push the system to ~6.1B. RRF fusion of dense + BM25 app rankings: app doc @5 85.3%, fusing all four app lists (dense/BM25 x max/app) @5 86.2% (19.9 tools); +4.8 over dense alone, still far from safe. tev1:0.8b group classifier: recall 43.8% on 40 samples. Keep all installed tools for now.
 - [ ] Per-slice report (taxonomy, seen vs unseen apps); first public leaderboard submission (user uploads via the portal, 5/day quota) - only once using a compliant (or explicitly organiser-cleared) model.
 
 ## Stage 4 - Upgrades I
