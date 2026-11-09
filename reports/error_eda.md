@@ -5,22 +5,22 @@ A sample can belong to several groups, so the counts do not add up to the number
 
 Cells are the share of the run's samples in that group.
 
-| Group | QVikhr-3-4B-Instruction B0 (gold) (n=100) | Qwen3-4B-AWQ B0 (gold) (n=100) | QVikhr-3-4B-Instruction B1 (asr) (n=100) | Qwen3-4B-AWQ B1 (asr) (n=100) |
-|---|---:|---:|---:|---:|
-| 1. Đúng tool, sai tham số | 71.0% | 60.0% | 57.0% | 47.0% |
-| 1a. có tham số thừa | 66.0% | 51.0% | 48.0% | 38.0% |
-| 1b. thiếu tham số | 1.0% | 2.0% | 0.0% | 2.0% |
-| 1c. có tham số sai giá trị | 34.0% | 31.0% | 37.0% | 29.0% |
-| 2. Gọi thiếu | 70.0% | 76.0% | 79.0% | 81.0% |
-| 3. Gọi thừa | 58.0% | 54.0% | 66.0% | 63.0% |
-| 3a. trong đó hỏi lại thừa | 16.0% | 21.0% | 33.0% | 31.0% |
-| 4. Chọn nhầm tool | 39.0% | 39.0% | 38.0% | 29.0% |
-| 5. Gold rỗng nhưng vẫn gọi | 4.0% | 4.0% | 5.0% | 5.0% |
-| 5. Gold rỗng, không gọi (đúng) | 2.0% | 2.0% | 1.0% | 1.0% |
-| 5b. Cần gọi nhưng không gọi gì | 0.0% | 0.0% | 1.0% | 3.0% |
-| 6. Bỏ tool tra cứu | 43.0% | 47.0% | 46.0% | 48.0% |
-| 7. Nhiều bước / có điều kiện | 63.0% (điểm TB 2.4) | 63.0% (điểm TB 1.1) | 63.0% (điểm TB 1.6) | 63.0% (điểm TB 1.1) |
-| Lệch state hash | 71.0% | 75.0% | 82.0% | 84.0% |
+| Group | QVikhr-3-4B-Instruction B0 (gold) (n=100) | Qwen3-4B-AWQ B0 (gold) (n=100) | Qwen3-4B-AWQ top5 B0 (gold) (n=100) | Qwen3-4B-planSFT B0 (gold) (n=309) | Qwen3-4B-planSFT2 B0 (gold) (n=309) | Qwen3-4B-trajSFT-top5 B0 (gold) (n=309) | Qwen3-4B-trajSFT B0 (gold) (n=309) | Qwen3-4B B0 (gold) (n=309) | QVikhr-3-4B-Instruction B1 (asr) (n=100) | Qwen3-4B-AWQ B1 (asr) (n=100) | Qwen3-4B-AWQ top5 B1 (asr) (n=100) |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| 1. Đúng tool, sai tham số | 71.0% | 60.0% | 65.0% | 33.3% | 32.7% | 25.9% | 25.9% | 52.8% | 57.0% | 47.0% | 49.0% |
+| 1a. có tham số thừa | 66.0% | 51.0% | 52.0% | 4.2% | 4.5% | 6.8% | 4.2% | 35.0% | 48.0% | 38.0% | 38.0% |
+| 1b. thiếu tham số | 1.0% | 2.0% | 2.0% | 6.8% | 6.8% | 5.5% | 6.5% | 1.0% | 0.0% | 2.0% | 0.0% |
+| 1c. có tham số sai giá trị | 34.0% | 31.0% | 38.0% | 26.5% | 25.9% | 17.8% | 19.7% | 34.6% | 37.0% | 29.0% | 37.0% |
+| 2. Gọi thiếu | 70.0% | 76.0% | 73.0% | 33.7% | 33.7% | 23.6% | 23.0% | 64.4% | 79.0% | 81.0% | 78.0% |
+| 3. Gọi thừa | 58.0% | 54.0% | 61.0% | 35.0% | 34.6% | 40.8% | 42.1% | 42.7% | 66.0% | 63.0% | 61.0% |
+| 3a. trong đó hỏi lại thừa | 16.0% | 21.0% | 21.0% | 2.9% | 3.2% | 1.3% | 1.6% | 6.8% | 33.0% | 31.0% | 26.0% |
+| 4. Chọn nhầm tool | 39.0% | 39.0% | 37.0% | 19.7% | 20.1% | 17.5% | 18.1% | 29.4% | 38.0% | 29.0% | 26.0% |
+| 5. Gold rỗng nhưng vẫn gọi | 4.0% | 4.0% | 5.0% | 3.2% | 3.2% | 5.5% | 5.5% | 3.9% | 5.0% | 5.0% | 5.0% |
+| 5. Gold rỗng, không gọi (đúng) | 2.0% | 2.0% | 1.0% | 3.9% | 3.9% | 1.6% | 1.6% | 3.2% | 1.0% | 1.0% | 1.0% |
+| 5b. Cần gọi nhưng không gọi gì | 0.0% | 0.0% | 2.0% | 1.6% | 1.6% | 0.3% | 0.3% | 1.3% | 1.0% | 3.0% | 2.0% |
+| 6. Bỏ tool tra cứu | 43.0% | 47.0% | 46.0% | 4.2% | 3.6% | 2.3% | 2.3% | 19.1% | 46.0% | 48.0% | 48.0% |
+| 7. Nhiều bước / có điều kiện | 63.0% (điểm TB 2.4) | 63.0% (điểm TB 1.1) | 63.0% (điểm TB 0.0) | 46.0% (điểm TB 37.3) | 46.0% (điểm TB 40.0) | 46.0% (điểm TB 49.4) | 46.0% (điểm TB 50.2) | 46.0% (điểm TB 6.0) | 63.0% (điểm TB 1.6) | 63.0% (điểm TB 1.1) | 63.0% (điểm TB 0.0) |
+| Lệch state hash | 71.0% | 75.0% | 77.0% | 45.6% | 44.3% | 40.8% | 41.4% | 66.3% | 82.0% | 84.0% | 86.0% |
 
 ## QVikhr-3-4B-Instruction B0 (gold): QVikhr-3-4B-Instruction.gold.sc6.a209ba03.jsonl
 
@@ -34,6 +34,42 @@ Score 5.33 / 100 on 100 samples; full score 4, zero 94.
 Lookup tools skipped (samples): `contacts.search` 24, `calendar.list_events` 19, `banking.list_beneficiaries` 11.
 Same-app confusions (predicted instead of gold): `bill_payment.schedule_autopay thay bill_payment.list_bills` 4, `ewallet.transfer thay ewallet.get_balance` 4, `banking.open_savings thay banking.get_balance` 3, `banking.open_savings thay banking.list_beneficiaries` 3, `bill_payment.schedule_autopay thay bill_payment.pay` 3, `bill_payment.pay thay bill_payment.list_bills` 2, `weather.get_current thay weather.get_forecast` 2, `banking.transfer thay banking.get_balance` 1.
 
+## Qwen3-4B-AWQ top5 B0 (gold): Qwen3-4B-AWQ.gold.sc6.top5.cd689f06.jsonl
+
+Score 4.07 / 100 on 100 samples; full score 3, zero 95.
+Lookup tools skipped (samples): `contacts.search` 24, `calendar.list_events` 17, `banking.list_beneficiaries` 11.
+Same-app confusions (predicted instead of gold): `ewallet.transfer thay ewallet.get_balance` 4, `bill_payment.pay thay bill_payment.list_bills` 3, `banking.open_savings thay banking.get_balance` 3, `banking.open_savings thay banking.list_beneficiaries` 3, `bill_payment.schedule_autopay thay bill_payment.list_bills` 3, `banking.open_savings thay banking.transfer` 2, `calendar.create_event thay calendar.list_events` 2, `calendar.create_event thay calendar.update_event` 2.
+
+## Qwen3-4B-planSFT B0 (gold): Qwen3-4B-planSFT.gold.sc6.dcd6e346.jsonl
+
+Score 44.93 / 100 on 309 samples; full score 115, zero 157.
+Lookup tools skipped (samples): `contacts.search` 8, `calendar.list_events` 5, `banking.list_beneficiaries` 1.
+Same-app confusions (predicted instead of gold): `banking.open_savings thay banking.list_beneficiaries` 1, `chat_ott.read_chat thay chat_ott.send_message` 1, `calendar.update_event thay calendar.create_event` 1, `lottery.check_ticket thay lottery.get_results` 1, `food_delivery.get_menu thay food_delivery.order_history` 1, `food_delivery.list_restaurants thay food_delivery.order_history` 1, `food_delivery.place_order thay food_delivery.order_history` 1, `reminders.complete thay reminders.create` 1.
+
+## Qwen3-4B-planSFT2 B0 (gold): Qwen3-4B-planSFT2.gold.sc6.dcd6e346.jsonl
+
+Score 46.39 / 100 on 309 samples; full score 117, zero 152.
+Lookup tools skipped (samples): `contacts.search` 7, `calendar.list_events` 4, `banking.list_beneficiaries` 1.
+Same-app confusions (predicted instead of gold): `food_delivery.get_menu thay food_delivery.order_history` 2, `food_delivery.list_restaurants thay food_delivery.order_history` 2, `food_delivery.place_order thay food_delivery.order_history` 2, `banking.open_savings thay banking.list_beneficiaries` 1, `smart_home.light_set thay smart_home.climate_set` 1, `flights.book thay flights.search` 1, `lottery.check_ticket thay lottery.get_results` 1, `reminders.complete thay reminders.create` 1.
+
+## Qwen3-4B-trajSFT-top5 B0 (gold): Qwen3-4B-trajSFT-top5.gold.sc6.dcd6e346.jsonl
+
+Score 50.39 / 100 on 309 samples; full score 125, zero 138.
+Lookup tools skipped (samples): `contacts.search` 4, `calendar.list_events` 3, `banking.list_beneficiaries` 0.
+Same-app confusions (predicted instead of gold): `flights.search thay flights.book` 2, `weather.forecast thay weather.get_forecast` 1, `lottery.check_ticket thay lottery.get_results` 1, `weather.get_current thay weather.get_forecast` 1, `alarm.update thay alarm.create` 1, `podcast_radio.search thay podcast_radio.subscribe` 1, `video_meeting.join thay video_meeting.list_meetings` 1, `robot_vacuum.stop thay robot_vacuum.start` 1.
+
+## Qwen3-4B-trajSFT B0 (gold): Qwen3-4B-trajSFT.gold.sc6.dcd6e346.jsonl
+
+Score 49.32 / 100 on 309 samples; full score 125, zero 141.
+Lookup tools skipped (samples): `contacts.search` 3, `calendar.list_events` 4, `banking.list_beneficiaries` 0.
+Same-app confusions (predicted instead of gold): `smart_home.light_set thay smart_home.climate_set` 1, `contacts.search thay contacts.update` 1, `flights.search thay flights.book` 1, `food_delivery.get_menu thay food_delivery.order_history` 1, `food_delivery.list_restaurants thay food_delivery.order_history` 1, `ride_hailing.get_quotes thay ride_hailing.get_ride` 1, `lottery.check_ticket thay lottery.get_results` 1, `podcast_radio.search thay podcast_radio.subscribe` 1.
+
+## Qwen3-4B B0 (gold): Qwen3-4B.gold.sc6.dcd6e346.jsonl
+
+Score 18.32 / 100 on 309 samples; full score 47, zero 244.
+Lookup tools skipped (samples): `contacts.search` 33, `calendar.list_events` 23, `banking.list_beneficiaries` 10.
+Same-app confusions (predicted instead of gold): `weather.get_current thay weather.get_forecast` 5, `bill_payment.pay thay bill_payment.list_bills` 2, `banking.open_savings thay banking.get_balance` 2, `banking.open_savings thay banking.list_beneficiaries` 2, `smart_home.get_status thay smart_home.light_set` 2, `exchange_rate.convert thay exchange_rate.get_rate` 2, `video_meeting.create thay video_meeting.list_meetings` 2, `food_delivery.list_restaurants thay food_delivery.order_history` 2.
+
 ## QVikhr-3-4B-Instruction B1 (asr): QVikhr-3-4B-Instruction.asr.sc6.a209ba03.jsonl
 
 Score 3.00 / 100 on 100 samples; full score 2, zero 96.
@@ -45,6 +81,12 @@ Same-app confusions (predicted instead of gold): `weather.get_current thay weath
 Score 2.67 / 100 on 100 samples; full score 2, zero 97.
 Lookup tools skipped (samples): `contacts.search` 24, `calendar.list_events` 20, `banking.list_beneficiaries` 11.
 Same-app confusions (predicted instead of gold): `bill_payment.schedule_autopay thay bill_payment.list_bills` 3, `calendar.create_event thay calendar.list_events` 3, `calendar.create_event thay calendar.update_event` 2, `banking.open_savings thay banking.get_balance` 2, `banking.open_savings thay banking.list_beneficiaries` 2, `ewallet.transfer thay ewallet.get_balance` 2, `ewallet.transfer thay ewallet.topup_mobile` 1, `ride_hailing.get_quotes thay ride_hailing.book` 1.
+
+## Qwen3-4B-AWQ top5 B1 (asr): Qwen3-4B-AWQ.asr.sc6.top5.cd689f06.jsonl
+
+Score 2.80 / 100 on 100 samples; full score 2, zero 97.
+Lookup tools skipped (samples): `contacts.search` 24, `calendar.list_events` 20, `banking.list_beneficiaries` 11.
+Same-app confusions (predicted instead of gold): `calendar.create_event thay calendar.list_events` 4, `calendar.create_event thay calendar.update_event` 2, `smart_home.light_set thay smart_home.get_status` 1, `ewallet.transfer thay ewallet.topup_mobile` 1, `chat_ott.call thay chat_ott.list_chats` 1, `chat_ott.call thay chat_ott.send_message` 1, `ride_hailing.get_quotes thay ride_hailing.book` 1, `smart_home.fan_set thay smart_home.climate_set` 1.
 
 ## Reading
 

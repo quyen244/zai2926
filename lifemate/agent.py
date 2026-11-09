@@ -14,15 +14,24 @@ from .data import tool_env
 from .llm import LLM
 from .prompt import build_prompt
 
+FAILURE = {"ok": False, "error": "Lỗi tạm thời từ máy chủ, vui lòng thử lại."}
+
 
 def run_sample(sample: dict, split: str, user_text: str, llm: LLM, asr: dict[str, str] | None = None,
-                step_cap: int = 6, validate_first: bool = False, trace: Callable[[str, dict], None] | None = None) -> dict:
+                step_cap: int = 6, validate_first: bool = False, trace: Callable[[str, dict], None] | None = None,
+                keep_apps: set[str] | None = None, fail_first: str | None = None) -> dict:
     """Run the loop on one fresh ToolEnv until the model stops calling tools or step_cap is hit.
     Returns the submission line: {"id", "tool_calls", "state_hash"} (lifemate.gold.write_submission shape).
     `trace(event, data)`, if given, sees every step: "prompt", "llm_request", "llm_reply", "parse", "validate",
-    "call", "final" (scripts/trace_sample.py writes them to a text file)."""
+    "call", "final" (scripts/trace_sample.py writes them to a text file).
+    `keep_apps`, if given, is a tool-list filter: only tools of those apps (plus sys.*) are offered to the model
+    (scripts/app_filter.py computes it per sample); None offers every installed app's tools, as before.
+    `fail_first`, if given, is a controlled tool failure for robustness tests: the FIRST call to that tool is not executed
+    and returns FAILURE instead (nothing reaches the ToolEnv, so it is not logged); later calls run normally."""
     emit = trace or (lambda event, data: None)
     prompt = build_prompt(sample, split, user_text, asr)
+    if keep_apps is not None:
+        prompt = {**prompt, "tools": [t for t in prompt["tools"] if t["function"]["name"].split(".")[0] in keep_apps | {"sys"}]}
     emit("prompt", prompt)
     env = tool_env(split, sample.get("env_id", sample["id"]))  # env_id: a benchmark item reusing a train sample's state
     messages = list(prompt["messages"])
@@ -41,7 +50,10 @@ def run_sample(sample: dict, split: str, user_text: str, llm: LLM, asr: dict[str
             except json.JSONDecodeError:
                 args = {}
             emit("parse", {"step": step, "name": name, "raw": c["function"]["arguments"], "args": args})
-            if validate_first:
+            if fail_first and name == fail_first:
+                fail_first = None
+                result = dict(FAILURE)
+            elif validate_first:
                 v = env.validate(name, args)
                 emit("validate", {"step": step, "name": name, "result": v})
                 result = v if not v["ok"] else env.call(name, args)

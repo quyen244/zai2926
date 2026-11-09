@@ -59,7 +59,8 @@ def start_servers() -> list[subprocess.Popen]:
     snapshot_download(MODEL)  # once, before two servers race for the same cache
     procs = []
     for gpu, port in enumerate(PORTS):
-        env = {**os.environ, "CUDA_VISIBLE_DEVICES": str(gpu), "VLLM_ATTENTION_BACKEND": "TRITON_ATTN_VLLM_V1"}
+        env = {**os.environ, "CUDA_VISIBLE_DEVICES": str(gpu), "VLLM_ATTENTION_BACKEND": "TRITON_ATTN_VLLM_V1",
+               "VLLM_CACHE_ROOT": f"/tmp/vllm_cache_gpu{gpu}"}  # own torch.compile cache per server: a shared one races (EOFError on GPU 1, 2026-11-07)
         cmd = [sys.executable, "-m", "vllm.entrypoints.openai.api_server", "--model", MODEL, "--port", str(port),
                "--max-model-len", "16384", "--gpu-memory-utilization", "0.88", "--dtype", "half", "--seed", "0",
                "--enable-auto-tool-choice", "--tool-call-parser", "hermes"]

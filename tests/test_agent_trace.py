@@ -40,3 +40,14 @@ def test_env_id_reuses_another_samples_state():
     item = {**s, "id": "hard_x_001", "env_id": "train_0001"}
     row = run_sample(item, "train", s["audio_text"], Gold(s["label"]["tool_calls"]))
     assert row["id"] == "hard_x_001" and row["state_hash"] == build_gold("train")["train_0001"]["state_hash"]
+
+
+def test_keep_apps_filters_the_tool_list():
+    """run_sample(keep_apps=...) offers only those apps' tools plus sys.*; the run itself is unchanged."""
+    s = next(x for x in load_samples("train") if x["id"] == "train_0001")
+    seen = {}
+    row = run_sample(s, "train", s["audio_text"], Gold(s["label"]["tool_calls"]), keep_apps={"weather"},
+                     trace=lambda e, d: e == "llm_request" and seen.setdefault("tools", [t["function"]["name"] for t in d["tools"]]))
+    apps = {n.split(".")[0] for n in seen["tools"]}
+    assert apps == {"weather", "sys"} and "sys.ask_missing_info" in seen["tools"]
+    assert row["state_hash"] == build_gold("train")["train_0001"]["state_hash"]  # gold replay still reaches the gold state

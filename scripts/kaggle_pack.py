@@ -21,7 +21,9 @@ OUT = PROJECT / "work" / "kaggle_dataset"
 DATASET_ID = "quyenuit24/lifemate-data"
 TRAIN = Path("data/train+public_test/train")
 INCLUDE = [Path("lifemate"), TRAIN / "train.jsonl", TRAIN / "train_tools_catalog.json", TRAIN / "train_environment",
-           TRAIN / "zaic_tools", Path("work/asr/phowhisper/train.jsonl"), Path("work/kaggle/cache")]
+           TRAIN / "zaic_tools", Path("work/asr/phowhisper/train.jsonl"), Path("work/kaggle/cache"),
+           Path("work/retrieval/app_filter.top5.json"),  # per-sample tool filter for kaggle/app_filter/ (scripts/app_filter.py)
+           Path("work/sft")]  # plan-ablation data: plan_check.requests.jsonl (kaggle/plan_check/), {plan,traj}.*.jsonl (training/eval)
 
 
 def keep(info: tarfile.TarInfo) -> tarfile.TarInfo | None:

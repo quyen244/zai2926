@@ -265,7 +265,14 @@ def trace_one(a, sid: str, sample: dict, asr_rows: dict, cache_file: Path | None
         tr.model, tr.openai = llm.model, llm.openai
     if not a.brief:
         tr.render = make_renderer(a.tokenizer)
-    row = run_sample(sample, a.split, user_text, llm, asr=(asr or None) if a.text == "asr" else None, validate_first=a.validate_first, trace=tr)
+    keep = None  # a cache file tagged ".topK." was run with the tool filter: replay it with the same tool list
+    parts = cache_file.name.split(".") if cache_file else []
+    if len(parts) == 6 and parts[3].startswith("top"):
+        f = PROJECT / "work" / "retrieval" / f"app_filter.{parts[3]}.json"
+        keep = set(json.loads(f.read_text(encoding="utf-8"))["keep"][a.text][sid])
+        tr.w(f"tool filter ({parts[3]}, {f.name}): chỉ đưa tool của {', '.join(sorted(keep))} + sys")
+    row = run_sample(sample, a.split, user_text, llm, asr=(asr or None) if a.text == "asr" else None, validate_first=a.validate_first, trace=tr,
+                     keep_apps=keep)
 
     if cached is not None:
         same = row["tool_calls"] == cached["tool_calls"] and row["state_hash"] == cached["state_hash"]
@@ -284,7 +291,7 @@ def trace_one(a, sid: str, sample: dict, asr_rows: dict, cache_file: Path | None
                 tr.w("    -> (không gọi tool nào)")
             for name, args, res in calls:
                 tr.w(f"    -> {name} {args}", f"         = {json.dumps(res, ensure_ascii=False)[:300]}")
-    llm_tag = f"cache-{cache_file.name.split('.')[0]}" if a.llm == "cache" else a.llm  # model in the name: Qwen and QVikhr traces do not overwrite each other
+    llm_tag = f"cache-{parts[0]}{'-' + parts[3] if len(parts) == 6 else ''}" if a.llm == "cache" else a.llm  # model in the name: Qwen and QVikhr traces do not overwrite each other
     out = a.out or PROJECT / "work" / "traces" / f"{sid}.{a.text}.{llm_tag}.txt"
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text("\n".join(tr.lines) + "\n", encoding="utf-8")

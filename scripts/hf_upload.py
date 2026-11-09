@@ -32,6 +32,7 @@ def main() -> None:
     ap.add_argument("folder", type=Path)
     ap.add_argument("--repo", required=True, help="<user>/<name>")
     ap.add_argument("--type", default="model", choices=["model", "dataset"])
+    ap.add_argument("--path-in-repo", default="", help="subfolder in the repo (e.g. plan/), so several folders share one repo")
     ap.add_argument("--dry-run", action="store_true", help="list the files and sizes, upload nothing")
     a = ap.parse_args()
     load_env()
@@ -50,8 +51,8 @@ def main() -> None:
         if "404" not in str(e) and "not found" not in str(e).lower():
             raise
     api.create_repo(a.repo, repo_type=a.type, private=True, exist_ok=True)
-    api.upload_folder(folder_path=str(a.folder), repo_id=a.repo, repo_type=a.type)
-    print(f"uploaded to https://huggingface.co/{a.repo} (private)")
+    api.upload_folder(folder_path=str(a.folder), repo_id=a.repo, repo_type=a.type, path_in_repo=a.path_in_repo or None)
+    print(f"uploaded to https://huggingface.co/{a.repo}/tree/main/{a.path_in_repo} (private)")
 
 
 if __name__ == "__main__":

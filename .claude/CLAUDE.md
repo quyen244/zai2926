@@ -97,6 +97,11 @@ never used at inference) or to a local harness smoke-test that is never uploaded
 
 ## Rules for this repo
 
+- **Show the prompt, draw the flow (2026-11-08).** Every new piece of work that involves a model prompt or a training
+  text: when there are two versions (two experiments, old vs new prompt, A vs B), show them side by side for one real
+  sample (e.g. `scripts/compare_sft.py`); when there is only one, print the filled prompt for one sample. Every new
+  piece of work (a job, a pipeline, a data build) starts with the hand-drawn flow artifact, before running anything.
+
 - **Human-friendly, easy-on-the-eyes output (2026-11-07).** Everything a script prints or writes for the user to read
   (traces, sample views, submission lines, gold vs predicted) is laid out for reading and comparing, never as a raw
   one-line JSON dump: one tool call per line as `    -> name {args}`, its result on the next line as `         = {...}`

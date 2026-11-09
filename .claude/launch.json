@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "label-web",
+      "runtimeExecutable": ".venv/Scripts/python.exe",
+      "runtimeArgs": ["-X", "utf8", "scripts/label_web.py", "--port", "8765"],
+      "port": 8765
+    }
+  ]
+}

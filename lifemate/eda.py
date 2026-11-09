@@ -96,7 +96,9 @@ def classify(pred: list[dict], gold: list[dict], text: str, hash_ok: bool, fz: d
 
 def variant_of(f: Path) -> str:
     v = "B0 (gold)" if ".gold." in f.name else "B1 (asr)" if ".asr." in f.name else f.stem
-    return f"{f.name.split('.')[0]} {v}"
+    parts = f.name.split(".")  # model.variant.scN[.tag].hash.jsonl: a tag such as "top5" marks a changed setup
+    tag = f" {parts[3]}" if len(parts) == 6 else ""
+    return f"{parts[0]}{tag} {v}"
 
 
 def load_runs(cache_dir: Path = CACHE_DIR) -> dict[tuple[str, Path], list[dict]]:

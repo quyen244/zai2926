@@ -110,7 +110,7 @@ class Usage:
 
 
 def tools_body(model: str, openai: bool, system: str, messages: list[dict], tools: list[dict], max_tokens: int = 1000,
-               temperature: float = 0) -> dict:
+               temperature: float = 0, chat_template: str | None = None) -> dict:
     """The exact JSON body LLM.chat_tools POSTs to /chat/completions (scripts/trace_sample.py prints it as is)."""
     if openai:
         tools = [{**t, "function": {**t["function"], "name": _api_name(t["function"]["name"])}} for t in tools]
@@ -121,14 +121,17 @@ def tools_body(model: str, openai: bool, system: str, messages: list[dict], tool
         body["reasoning_effort"] = "none"
     else:  # vLLM: Qwen3 thinks by default; the agent must answer with a tool call straight away
         body["chat_template_kwargs"] = {"enable_thinking": False}
+        if chat_template:  # vLLM renders this request with it instead of the model's own (lifemate.sft.history_think_template)
+            body["chat_template"] = chat_template
     return body
 
 
 class LLM:
     def __init__(self, model: str | None = None, rpm: float | None = None, tpm: float | None = None, timeout: float = 180,
-                 base_url: str | None = None):
+                 base_url: str | None = None, chat_template: str | None = None):
         """base_url (or LLM_BASE_URL): any OpenAI-compatible server, e.g. vLLM at http://host:8000/v1. Without it the
-        client talks to OpenAI, which needs OPENAI_API_KEY; a self-hosted server needs no key."""
+        client talks to OpenAI, which needs OPENAI_API_KEY; a self-hosted server needs no key. chat_template: sent with
+        every tool request to a vLLM server (the plan-ablation adapters are served with the template they were trained on)."""
         load_env()
         base_url = base_url or os.environ.get("LLM_BASE_URL")
         self.openai = not base_url
@@ -140,6 +143,7 @@ class LLM:
         self.limiter = RateLimiter(rpm or float(os.environ.get("LLM_RPM", 1000)), tpm or float(os.environ.get("LLM_TPM", 400_000)))
         self.timeout = timeout
         self.usage = Usage()
+        self.chat_template = chat_template
 
     def chat_json(self, system: str, user: str, max_tokens: int = 4000, max_retries: int = 6) -> dict:
         """One chat completion in JSON mode; returns the parsed JSON object. Retries rate-limit and server errors with
@@ -187,7 +191,7 @@ class LLM:
         invisibly to the caller (lifemate.agent never sees the sanitised form). A self-hosted model (base_url) gets
         the real names, the ones it is fine-tuned on, and no OpenAI-only field such as reasoning_effort.
         temperature=0 for reproducible agent runs. Retries rate-limit and server errors like chat_json."""
-        body = tools_body(self.model, self.openai, system, messages, tools, max_tokens, temperature)
+        body = tools_body(self.model, self.openai, system, messages, tools, max_tokens, temperature, self.chat_template)
         data = json.dumps(body).encode("utf-8")
         est = len(data) // 3 + max_tokens
         for attempt in range(max_retries + 1):

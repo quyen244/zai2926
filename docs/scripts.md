@@ -19,7 +19,7 @@ Script nào in dữ liệu của từng mẫu (id, câu, nhãn) thì chỉ in ra
 | `trace_sample.py` | Đi qua cả pipeline từng mẫu (một hoặc nhiều id, mỗi id một file): normaliser, prompt, từng lượt LLM, parse, chạy ToolEnv, chấm điểm | `trace_sample.py --id train_0018 train_0095 --text gold --llm cache` |
 | `show_tool.py` | Schema của một tool hay một app: mô tả, tham số, ràng buộc | `show_tool.py phone.call contacts.search`, `show_tool.py --list` |
 
-`trace_sample.py --llm cache` phát lại câu trả lời đã cache của lượt Kaggle, không gọi model (mặc định file cache mới nhất, chọn model bằng `--cache`); file ra là `work/traces/<id>.<text>.cache-<model>.txt`; id không có trong cache bị bỏ qua; `--brief` cho bản rút gọn.
+`trace_sample.py --llm cache` phát lại câu trả lời đã cache của lượt Kaggle, không gọi model (mặc định file cache mới nhất, chọn model bằng `--cache`); file ra là `work/traces/<id>.<text>.cache-<model>[-<tag>].txt`; id không có trong cache bị bỏ qua; `--brief` cho bản rút gọn.
 
 ## 2. Khám phá dữ liệu train
 
@@ -32,6 +32,10 @@ Script nào in dữ liệu của từng mẫu (id, câu, nhãn) thì chỉ in ra
 | `retrieval_recall.py` | Thử BM25 lọc bớt tool có làm mất tool cần dùng không -> `reports/retrieval_bm25.md` | `retrieval_recall.py --misses 20` |
 | `retrieval_dense.py` | BGE-M3 vs BM25 vs RRF ở mức tool và app, cùng context tên + mô tả -> `reports/retrieval_dense.md` (vector cache ở `work/retrieval/`) | `retrieval_dense.py --misses 10` |
 | `retrieval_sample.py` | Từng mẫu: xếp hạng các app đã cài bằng BM25, BGE-M3, RRF; top-4/top-5 có giữ đủ app gold không (chỉ in màn hình) | `retrieval_sample.py train_0018 --text gold`, `retrieval_sample.py --all` |
+| `app_filter.py` | Tính bộ lọc tool cho từng mẫu (RRF all4 top-k app + contacts) cho job Kaggle `kaggle/app_filter/` -> `work/retrieval/app_filter.top5.json` | `app_filter.py --limit 100 --k 5` |
+| `plan_branch.py` | Xem prompt gán nhãn nhánh rẽ đã điền dữ liệu, nhãn nháp theo luật và plan rẽ nhánh dựng ra cho từng mẫu (chỉ in màn hình) | `plan_branch.py --show 6 1 --system`, `plan_branch.py --candidates` |
+| `compare_sft.py` | So sánh 2 dòng train SFT của một mẫu cạnh nhau: B (chỉ SFT) \| A (SFT + plan), số token, `--render` xem đúng chat template với phần tính loss, `--rule R3 --n 3` lấy mẫu theo luật plan (chỉ in màn hình) | `compare_sft.py 112 1658`, `compare_sft.py 112 --render` |
+| `label_web.py` | Web local (http://127.0.0.1:8765) để gán nhãn tay: câu có điều kiện không, call [read] nào là bước kiểm tra; xem trước plan bản A sẽ học; nhãn 8B ẩn mặc định -> `work/sft/manual_labels.jsonl` | `label_web.py --port 8765` |
 | `stage0_harness.py` | Dựng gold train (replay state hash), splits, kiểm validator -> `reports/stage0.md` | `stage0_harness.py` |
 | `stage1_labels.py` | Giải phẫu nhãn, schema, environment, lịch sử -> `reports/stage1_labels.md` | `stage1_labels.py` |
 | `stage1_taxonomy.py` | Gắn taxonomy tình huống cho từng mẫu -> `reports/stage1_taxonomy.md` | `stage1_taxonomy.py` |
