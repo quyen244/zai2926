@@ -101,12 +101,11 @@ never used at inference) or to a local harness smoke-test that is never uploaded
 - **App filter = fine-tuned e5 top-7 (2026-11-16, replaces "no app filter" of 2026-11-15).** The filter is
   `quyenuit24/lifemate-embed-train` output (multilingual-e5-small fine-tuned on folds 1-4, listwise InfoNCE over installed
   apps; local copy `work/kaggle/embed_train_q/out/app_embedder_e5`): keep the 7 installed apps closest to the user text,
-  plus `contacts` and `sys`, via `run_sample(keep_apps=...)`. An earlier fold-0 check recorded 100% sample recall,
-  but this is not guaranteed by top-7. The 2026-11-22 paired 309-sample RAT checkpoint evaluation retained 455/498
-  required gold-app instances (91.37%) and every required app in 244/309 samples; recall depends on the exact query
-  and target definition.
-  Measure it on the evaluation set. The old BGE-M3 `work/retrieval/app_filter.top5.json` is not used. Scores with and
-  without the filter are not comparable.
+  plus `contacts` and `sys`, via `run_sample(keep_apps=...)`. On the 2026-11-22 gold-text paired 309-sample RAT eval,
+  K=7 was the minimum for 100% required-app coverage; the highest-ranked required app was rank 7. The first eval
+  report undercounted coverage because its stats omitted `sys.*`, although `run_sample` always adds those tools to the
+  prompt. Ensure future recall stats count the effective candidate set. The old BGE-M3
+  `work/retrieval/app_filter.top5.json` is not used. Scores with and without the filter are not comparable.
 
 - **Rollout/eval filter decision (2026-11-21).** From now on, all rollout generation and evaluation use the fine-tuned
   E5 top-7 app filter, plus `contacts` and `sys`, to reduce runtime. Existing RAT tool-only jobs submitted without the
@@ -134,7 +133,7 @@ never used at inference) or to a local harness smoke-test that is never uploaded
 - **RAT gold + paraphrase checkpoint evaluation (2026-11-22).** Evaluate only the new checkpoint on fold 0 with paired gold and PhoWhisper P2 text, top-7 filter, `normalise=False`, six-step cap, and the same decoding.
   Kaggle job `tquynlnguyn/lifemate-rat-gold-checkpoint-eval` version 2 completed on two GPUs with 618/618 successful runs.
   It scored 58.5437 on gold text and 43.3164 on P2 text, a 15.2273-point gap.
-  The top-7 filter retained 455/498 gold apps (91.37%) and retained all gold apps for 244/309 samples.
+  For gold text, top-7 retained every required app in 309/309 samples; the original filter stats omitted always-available `sys.*` tools.
   This single-checkpoint run does not show whether the new checkpoint improves over the previous RAT checkpoint.
   Aggregate results: `reports/rat_gold_checkpoint_fold0.md`; detailed outputs stay in ignored `work/`.
 

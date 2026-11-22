@@ -3,10 +3,9 @@
 Model: intfloat/multilingual-e5-small fine-tuned on train folds 1-4 (scripts/train_app_embedder.py, Kaggle job
 quyenuit24/lifemate-embed-train; local copy work/kaggle/embed_train_q/out/app_embedder_e5). Query and app documents are
 built exactly as in training: "query: " + normalize_text(final user text), "passage: " + enriched_app_doc(app).
-An earlier fold-0 check recorded 100% sample recall, but that is not a guarantee of top-7. The paired 309-sample
-RAT checkpoint evaluation retained 455/498 required gold-app instances (91.37%) and all required apps in 244/309
-samples. Recall depends on the query and target definition; measure it on the exact evaluation set before relying on
-the filter.
+The 309-sample RAT checkpoint evaluation found that gold-text top-7 retained all required apps in all samples.
+The highest-ranked required app was rank 7, so K=7 was the minimum for 100% coverage on that set. Coverage stats must
+include `sys.*`, which `run_sample` always adds after applying `keep_apps`.
 
     f = AppFilter(model_dir)                # once: loads e5 and embeds every catalog app
     keep = f.keep(text, installed_apps)     # -> set of app ids for run_sample(keep_apps=...)

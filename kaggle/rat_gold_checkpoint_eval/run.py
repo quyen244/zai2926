@@ -179,11 +179,13 @@ def main() -> None:
             text = s["audio_text"] if v == "gold" else asr[v][s["audio"]]
             selected = filt.keep(text, s["context"]["installed_apps"])
             keep[(s["id"], v)] = selected
+            # run_sample always adds sys.* after applying keep_apps; include it in coverage stats too.
+            effective_selected = selected | {"sys"}
             targets = {c["name"].split(".", 1)[0] for c in s["label"]["tool_calls"]}
             gold_apps += len(targets)
-            kept_gold_apps += len(targets & selected)
-            samples_with_all_gold_apps += bool(targets) and targets <= selected
-            kept_apps += len(selected)
+            kept_gold_apps += len(targets & effective_selected)
+            samples_with_all_gold_apps += bool(targets) and targets <= effective_selected
+            kept_apps += len(effective_selected)
         filter_stats[v] = {"kept_apps_total": kept_apps, "gold_apps": gold_apps,
                            "gold_apps_retained": kept_gold_apps,
                            "gold_app_recall": kept_gold_apps / max(gold_apps, 1),

@@ -17,7 +17,11 @@ The score is the official mean per-sample tool-call F1 with the state-hash match
 
 The ASR input score is 15.2273 points below the gold-input score for this checkpoint.
 
-The fine-tuned E5 top-7 filter retained 455/498 required gold-app instances (91.37%) in both variants, and retained every required app for 244/309 samples.
+For gold text, K=7 was the minimum top-K that retained every required app in all 309 samples; the highest-ranked required app was at rank 7.
+
+The kernel's original `filter_stats` incorrectly excluded `sys.*` from its recall calculation, although `run_sample` always includes `sys.*` in the prompt.
+
+Its reported 91.37% app recall and 244/309 full-sample coverage were therefore undercounts, not the tools actually offered to the model.
 
 There were 618 successful runs, zero failed runs, and zero samples skipped by the time limit.
 
