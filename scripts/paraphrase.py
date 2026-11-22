@@ -22,6 +22,7 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import os
 import json
 import random
 import re
@@ -45,7 +46,7 @@ from plan_data import scalars, meaningful, tool_kinds  # noqa: E402
 OUT = PROJECT / "work" / "synth"
 CACHE = OUT / "paraphrase.jsonl"
 KEPT = OUT / "paraphrase.kept.jsonl"  # written by --all / --show: {"id", "n", "text", "phash"} per kept rewrite
-ENV = OUT / "mp.env"
+ENV = OUT / os.environ.get("MP_ENV_FILE", "mp.env")  # one token file per Kaggle account (each has its own $10/day)
 KAGGLE = PROJECT / ".venv" / "Scripts" / "kaggle.exe"
 MARK = re.compile(r"\b(thì|nếu|hễ|lỡ|trường hợp|miễn là|còn không|không thì|kẻo)\b", re.I)
 ASK = "sys.ask_missing_info"

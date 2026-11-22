@@ -1,0 +1,7 @@
+vllm==0.10.2
+transformers==4.57.1
+ctranslate2==4.8.4
+faster-whisper==1.2.1
+soundfile
+numpy
+jupyterlab

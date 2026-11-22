@@ -1,0 +1,17 @@
+{
+  "id": "tquynlnguyn/lifemate-asr-fewshot-correction",
+  "title": "lifemate-asr-fewshot-correction",
+  "code_file": "run.py",
+  "language": "python",
+  "kernel_type": "script",
+  "is_private": true,
+  "enable_gpu": true,
+  "enable_internet": true,
+  "dataset_sources": ["tquynlnguyn/lifemate-asr-fewshot-input"],
+  "competition_sources": [],
+  "kernel_sources": [
+    "tquynlnguyn/lifemate-p2-decode-train-pairs",
+    "tquynlnguyn/lifemate-asr-gold-retriever-train",
+    "tquynlnguyn/lifemate-b2-train"
+  ]
+}

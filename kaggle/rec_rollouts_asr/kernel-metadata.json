@@ -1,0 +1,13 @@
+{
+  "id": "tquynlnguyn/lifemate-rec-rollouts-asr",
+  "title": "lifemate-rec-rollouts-asr",
+  "code_file": "run.py",
+  "language": "python",
+  "kernel_type": "script",
+  "is_private": true,
+  "enable_gpu": true,
+  "enable_internet": true,
+  "dataset_sources": ["tquynlnguyn/lifemate-rec-rollouts-asr-input"],
+  "competition_sources": [],
+  "kernel_sources": ["tquynlnguyn/lifemate-recovery-train"]
+}

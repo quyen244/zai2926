@@ -1,0 +1,19 @@
+{
+  "id": "quyenuit24/lifemate-public-submit",
+  "title": "lifemate-public-submit",
+  "code_file": "run.py",
+  "language": "python",
+  "kernel_type": "script",
+  "is_private": true,
+  "enable_gpu": true,
+  "enable_internet": true,
+  "dataset_sources": [
+    "quyenuit24/lifemate-public-infer",
+    "quyenuit24/lifemate-public-asr"
+  ],
+  "competition_sources": [],
+  "kernel_sources": [
+    "quyenuit24/lifemate-asr-decode",
+    "quyenuit24/lifemate-embed-train"
+  ]
+}

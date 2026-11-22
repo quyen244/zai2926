@@ -1,0 +1,17 @@
+{
+  "id": "tquynlnguyn/lifemate-recovery-train",
+  "title": "lifemate-recovery-train",
+  "code_file": "run.py",
+  "language": "python",
+  "kernel_type": "script",
+  "is_private": true,
+  "enable_gpu": true,
+  "enable_internet": true,
+  "dataset_sources": [
+    "tquynlnguyn/lifemate-recovery-data"
+  ],
+  "competition_sources": [],
+  "kernel_sources": [
+    "tquynlnguyn/lifemate-b2-train"
+  ]
+}

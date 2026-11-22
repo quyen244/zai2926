@@ -1,0 +1,13 @@
+{
+  "id": "quyenuit24/lifemate-rec-rollouts-e5",
+  "title": "lifemate-rec-rollouts-e5",
+  "code_file": "run.py",
+  "language": "python",
+  "kernel_type": "script",
+  "is_private": true,
+  "enable_gpu": true,
+  "enable_internet": true,
+  "dataset_sources": ["quyenuit24/lifemate-rec-rollouts-e5-input", "quyenuit24/lifemate-public-infer", "quyenuit24/lifemate-app-filter-code"],
+  "competition_sources": [],
+  "kernel_sources": ["quyenuit24/lifemate-embed-train"]
+}

@@ -1,0 +1,13 @@
+{
+  "id": "tquynlnguyn/lifemate-spell-correction-base-5e",
+  "title": "lifemate-spell-correction-base-5e",
+  "code_file": "run.py",
+  "language": "python",
+  "kernel_type": "script",
+  "is_private": true,
+  "enable_gpu": true,
+  "enable_internet": true,
+  "dataset_sources": ["tquynlnguyn/lifemate-spell-correction-sft-input"],
+  "competition_sources": [],
+  "kernel_sources": ["tquynlnguyn/lifemate-spell-correction-base-sft"]
+}

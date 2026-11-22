@@ -8,12 +8,14 @@ from __future__ import annotations
 
 import importlib
 import json
+import os
 import sys
 from functools import lru_cache
 from pathlib import Path
 
 PROJECT = Path(__file__).resolve().parent.parent
-DATA_ROOT = PROJECT / "data" / "train+public_test"
+# LIFEMATE_DATA_ROOT: the folder that holds <split>/ (the Docker image sets it to /data)
+DATA_ROOT = Path(os.environ.get("LIFEMATE_DATA_ROOT") or PROJECT / "data" / "train+public_test")
 SPLITS = ("train", "public_test", "private_test")
 
 

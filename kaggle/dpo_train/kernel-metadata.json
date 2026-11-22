@@ -1,0 +1,16 @@
+{
+  "id": "quyenuit24/lifemate-dpo-train",
+  "title": "lifemate-dpo-train",
+  "code_file": "run.py",
+  "language": "python",
+  "kernel_type": "script",
+  "is_private": true,
+  "enable_gpu": true,
+  "enable_internet": true,
+  "dataset_sources": [
+    "quyenuit24/lifemate-rec-rollouts-e5-input",
+    "quyenuit24/lifemate-rat-toolonly-data"
+  ],
+  "competition_sources": [],
+  "kernel_sources": ["quyenuit24/lifemate-rat-toolonly-rollouts"]
+}

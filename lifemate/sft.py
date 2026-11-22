@@ -46,25 +46,35 @@ def template_messages(row: dict) -> list[dict]:
 def render(row: dict, tok) -> tuple[str, list[tuple[int, int]]]:
     """Full text and the character spans that carry loss (one per trained assistant message, in order)."""
     text = tok.apply_chat_template(template_messages(row), tools=row["tools"], tokenize=False, enable_thinking=False)
-    n_train = sum(1 for m in row["messages"] if m.get("train"))
-    starts, i = [], 0
-    while (i := text.find(ASSISTANT, i)) != -1:
-        starts.append(i)
-        i += len(ASSISTANT)
+    msgs = row["messages"]
+    last_user = max(k for k, m in enumerate(msgs) if m["role"] == "user")
+    asst = [k for k, m in enumerate(msgs) if m["role"] == "assistant"]
+    # Current-turn assistant messages (after the final user turn) get the think block, as history_think_template()
+    # renders them at inference; loss goes only on those flagged "train". A current-turn message may be untrained
+    # (a recovery row's bad call that the ID guard blocked): it keeps its think block but carries no loss.
+    current = [j for j, k in enumerate(asst) if k > last_user]
+    trained = [j for j, k in enumerate(asst) if msgs[k].get("train")]
+    assert set(trained) <= set(current), f"{row.get('id')}: a trained assistant message is before the final user turn"
+
+    def starts_of(t: str) -> list[int]:
+        out, i = [], 0
+        while (i := t.find(ASSISTANT, i)) != -1:
+            out.append(i)
+            i += len(ASSISTANT)
+        assert len(out) == len(asst), f"{row.get('id')}: {len(out)} assistant headers for {len(asst)} assistant messages"
+        return out
+
     # At inference every generation starts right after ASSISTANT + THINK (enable_thinking=False adds the empty think
-    # block to the generation prompt), but the template keeps that block only on the LAST assistant message. Insert it
-    # before every trained message so each trained turn sees the same left context as the step that generates it.
-    for s in reversed(starts[-n_train:]):
-        a = s + len(ASSISTANT)
+    # block to the generation prompt), but the native template keeps that block only on the LAST assistant message.
+    starts = starts_of(text)
+    for j in reversed(current):
+        a = starts[j] + len(ASSISTANT)
         if not text.startswith(THINK, a):
             text = text[:a] + THINK + text[a:]
-    spans, i = [], 0
-    starts = []
-    while (i := text.find(ASSISTANT, i)) != -1:
-        starts.append(i)
-        i += len(ASSISTANT)
-    for s in starts[-n_train:]:  # trained turns are the last assistant messages of the conversation
-        a = s + len(ASSISTANT) + len(THINK)
+    starts = starts_of(text)
+    spans = []
+    for j in trained:
+        a = starts[j] + len(ASSISTANT) + len(THINK)
         e = text.index(END, a) + len(END)
         spans.append((a, e))
     return text, spans

@@ -44,10 +44,14 @@ trong hồ sơ, "giờ hiện tại" cho các mốc thời gian tương đối).
 """
 
 
-def build_user_text(raw_text: str, now: str | datetime) -> str:
-    """Spoken-form normaliser + a relative-date hint line, applied to every user turn (history and current)."""
+def build_user_text(raw_text: str, now: str | datetime, normalise: bool = True) -> str:
+    """Spoken-form normaliser + a relative-date hint line, applied to every user turn (history and current).
+    normalise=False keeps the spoken words ("8 giờ kém 15 tối", "hai triệu tám") for a model that converts them itself
+    in its rationale (scripts/rationale_data.py); the date hint line is kept either way."""
     text = normalize_text(raw_text)
     dates = resolve_dates(text, now)
+    if not normalise:
+        text = raw_text
     if not dates:
         return text
     hints = "; ".join(f'"{d["phrase"]}" = {d["date"]}' for d in dates)
@@ -93,7 +97,7 @@ def _tool_call_messages(turn: dict, idx: int) -> list[dict]:
     return msgs
 
 
-def build_messages(sample: dict, user_text: str, asr: dict[str, str] | None = None) -> list[dict]:
+def build_messages(sample: dict, user_text: str, asr: dict[str, str] | None = None, normalise: bool = True) -> list[dict]:
     """Replay `sample["history"]` as real chat turns, then append the current (already-normalised) user turn.
 
     `asr`: optional {audio relative path -> ASR hypothesis}, e.g. loaded from a work/asr/*.jsonl file.
@@ -108,17 +112,18 @@ def build_messages(sample: dict, user_text: str, asr: dict[str, str] | None = No
             raw = asr.get(turn["audio"], turn.get("audio_text"))
             if raw is None:
                 raise ValueError(f"no text for history turn {i} (audio={turn['audio']}): pass it via `asr`")
-            messages.append({"role": "user", "content": build_user_text(raw, now)})
+            messages.append({"role": "user", "content": build_user_text(raw, now, normalise)})
         else:
             if turn.get("tool_calls"):
                 messages += _tool_call_messages(turn, i)
             elif turn.get("text"):
                 messages.append({"role": "assistant", "content": turn["text"]})
-    messages.append({"role": "user", "content": build_user_text(user_text, now)})
+    messages.append({"role": "user", "content": build_user_text(user_text, now, normalise)})
     return messages
 
 
-def build_prompt(sample: dict, split: str, user_text: str, asr: dict[str, str] | None = None, root=DATA_ROOT) -> dict:
+def build_prompt(sample: dict, split: str, user_text: str, asr: dict[str, str] | None = None, root=DATA_ROOT,
+                 normalise: bool = True) -> dict:
     """{"system", "tools", "messages"} ready to send as a chat-completions request (system is a separate string,
     as the OpenAI-compatible client in lifemate.llm expects; prepend it as the first message for other APIs)."""
     ctx = sample["context"]
@@ -126,5 +131,5 @@ def build_prompt(sample: dict, split: str, user_text: str, asr: dict[str, str] |
     return {
         "system": system,
         "tools": build_tools(split, ctx["installed_apps"], root),
-        "messages": build_messages(sample, user_text, asr),
+        "messages": build_messages(sample, user_text, asr, normalise),
     }

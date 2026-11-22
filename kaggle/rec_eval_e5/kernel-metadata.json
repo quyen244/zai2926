@@ -1,0 +1,19 @@
+{
+  "id": "quyenuit24/lifemate-rec-eval-e5",
+  "title": "lifemate-rec-eval-e5",
+  "code_file": "run.py",
+  "language": "python",
+  "kernel_type": "script",
+  "is_private": true,
+  "enable_gpu": true,
+  "enable_internet": true,
+  "dataset_sources": [
+    "quyenuit24/lifemate-rat-eval-input",
+    "quyenuit24/lifemate-app-filter-code",
+    "quyenuit24/lifemate-public-infer"
+  ],
+  "competition_sources": [],
+  "kernel_sources": [
+    "quyenuit24/lifemate-embed-train"
+  ]
+}

@@ -18,7 +18,18 @@ __pycache__/
 
 # Outputs and model weights
 submission*.jsonl
+submission_docker/*.tar.gz
 checkpoints/
 *.safetensors
 *.bin
 venv/
+
+# Claude artifact sources (flows may name sample ids; the repo is public)
+artifact/
+
+# Local submission build artifacts
+submission_docker/build/
+submission_docker/build.log
+submission_docker/smoke.log
+submission_docker/zac2026_LifeMate.md5
+submission_docker/predict_notebook.ipynb

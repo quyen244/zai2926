@@ -1,0 +1,17 @@
+{
+  "id": "tquynlnguyn/lifemate-rec-asr-eval",
+  "title": "lifemate-rec-asr-eval",
+  "code_file": "run.py",
+  "language": "python",
+  "kernel_type": "script",
+  "is_private": true,
+  "enable_gpu": true,
+  "enable_internet": true,
+  "dataset_sources": [
+    "tquynlnguyn/lifemate-rec-asr-eval-input"
+  ],
+  "competition_sources": [],
+  "kernel_sources": [
+    "tquynlnguyn/lifemate-recovery-train"
+  ]
+}

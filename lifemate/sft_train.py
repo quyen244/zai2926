@@ -3,6 +3,7 @@
   CUDA_VISIBLE_DEVICES=0 python -m lifemate.sft_train --data plan --out adapters/plan
   CUDA_VISIBLE_DEVICES=1 python -m lifemate.sft_train --data traj --out adapters/traj
   ... --max-steps 10 --limit 64   # smoke test: measures tokens/s and memory
+  ... --data traj --data-dir work/sft_b2 --init-adapter adapters/traj_v1   # B2: continue B v1 on other rows
 
 Every setting is shared by the two experiments (only --data differs): base model, tokenizer, data order (seed),
 4-bit NF4 base + fp16 compute (T4 has no bf16), LoRA r16/a32 on all attention and MLP projections (dropout 0 with the
@@ -18,6 +19,7 @@ from __future__ import annotations
 import argparse
 import contextlib
 import json
+import math
 import os
 import random
 import time
@@ -31,8 +33,8 @@ from .sft import IGNORE, encode
 ROOT = Path(__file__).resolve().parent.parent
 
 
-def load_rows(name: str, part: str, limit: int) -> list[dict]:
-    rows = [json.loads(l) for l in (ROOT / "work" / "sft" / f"{name}.{part}.jsonl").read_text(encoding="utf-8").splitlines() if l.strip()]
+def load_rows(name: str, part: str, limit: int, data_dir: str = "work/sft") -> list[dict]:
+    rows = [json.loads(l) for l in (ROOT / data_dir / f"{name}.{part}.jsonl").read_text(encoding="utf-8").splitlines() if l.strip()]
     return rows[:limit] if limit else rows
 
 
@@ -93,6 +95,27 @@ def t4_attention() -> contextlib.AbstractContextManager:
     return sdpa_kernel([SDPBackend.EFFICIENT_ATTENTION])
 
 
+def load_adapter(model, path: Path, rank: int, targets: list[str]) -> None:
+    """Copy a saved LoRA adapter's weights into the fresh adapter get_peft_model just made (same shapes), so the
+    backend's own training path (unsloth checkpointing and kernels) is kept. Fails loudly on any mismatch: a different
+    rank / alpha / target set, a key the model does not have, or a LoRA weight of the model left unloaded."""
+    from peft import set_peft_model_state_dict
+    from safetensors.torch import load_file
+
+    cfg = json.loads((path / "adapter_config.json").read_text(encoding="utf-8"))
+    if (cfg["r"], cfg["lora_alpha"], set(cfg["target_modules"])) != (rank, 2 * rank, set(targets)):
+        raise SystemExit(f"{path}: r={cfg['r']} alpha={cfg['lora_alpha']} targets={sorted(cfg['target_modules'])} do not match this run")
+    sd = load_file(str(path / "adapter_model.safetensors"))
+    res = set_peft_model_state_dict(model, sd)
+    missing = [k for k in res.missing_keys if "lora_" in k]
+    if res.unexpected_keys or missing:
+        raise SystemExit(f"{path}: unexpected {res.unexpected_keys[:3]} / missing LoRA {missing[:3]}")
+    b = sum(p.detach().float().abs().sum().item() for n, p in model.named_parameters() if "lora_B" in n)
+    print(f"loaded {len(sd)} tensors from {path}; sum |lora_B| = {b:.1f} (0 for a fresh adapter)", flush=True)
+    if b == 0:
+        raise SystemExit(f"{path}: lora_B is all zero after loading")
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--data", choices=["plan", "traj"], required=True)
@@ -109,6 +132,9 @@ def main() -> None:
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--max-hours", type=float, default=0, help="stop training cleanly after this many hours of training "
                     "(Kaggle kills a session at 12 h and keeps nothing), then evaluate and save the adapter; 0 = no limit")
+    ap.add_argument("--data-dir", default="work/sft", help="folder of <data>.{train,val}.jsonl, relative to the repo")
+    ap.add_argument("--init-adapter", type=Path, help="continue training this LoRA adapter (same rank and target modules) "
+                    "instead of a fresh one; the optimizer and lr schedule start fresh")
     ap.add_argument("--backend", choices=["unsloth", "hf"], default="unsloth",
                     help="unsloth: FastLanguageModel 4-bit + its offloaded gradient checkpointing and attention kernels "
                          "(Kaggle notebook Qwen3 (4B) Tool_Calling); hf: transformers + bitsandbytes + peft")
@@ -123,10 +149,10 @@ def main() -> None:
     a.out.mkdir(parents=True, exist_ok=True)
     tok = AutoTokenizer.from_pretrained(a.model)
     t0 = time.time()
-    train = [encode(r, tok, a.max_len) for r in load_rows(a.data, "train", 0)]
+    train = [encode(r, tok, a.max_len) for r in load_rows(a.data, "train", 0, a.data_dir)]
     if a.limit:  # smoke test: the LONGEST rows, so the peak memory measured is the worst case of the full run
         train = sorted(train, key=lambda x: -x["n_tokens"])[: a.limit]
-    val = [encode(r, tok, a.max_len) for r in load_rows(a.data, "val", 0 if not a.limit else 16)]
+    val = [encode(r, tok, a.max_len) for r in load_rows(a.data, "val", 0 if not a.limit else 16, a.data_dir)]
     print(f"[{a.data}] encoded {len(train)} train / {len(val)} val rows in {time.time() - t0:.0f}s; "
           f"tokens {sum(x['n_tokens'] for x in train)}, supervised {sum(x['n_supervised'] for x in train)}", flush=True)
 
@@ -147,9 +173,11 @@ def main() -> None:
         model = AutoModelForCausalLM.from_pretrained(a.model, quantization_config=bnb, torch_dtype=torch.float16, attn_implementation="sdpa", device_map={"": 0})
         model = prepare_model_for_kbit_training(model, use_gradient_checkpointing=True, gradient_checkpointing_kwargs={"use_reentrant": False})
         model = get_peft_model(model, LoraConfig(r=a.rank, lora_alpha=2 * a.rank, lora_dropout=0.05, bias="none", task_type="CAUSAL_LM", target_modules=targets))
+    if a.init_adapter:
+        load_adapter(model, a.init_adapter, a.rank, targets)
     model.print_trainable_parameters()
 
-    steps_total = a.max_steps if a.max_steps > 0 else int(len(train) * a.epochs / a.accum)
+    steps_total = a.max_steps if a.max_steps > 0 else math.ceil(len(train) * a.epochs / a.accum)
     every = max(1, steps_total // a.evals)
     log = open(a.out / "log.jsonl", "w", encoding="utf-8")
 
@@ -204,8 +232,13 @@ def main() -> None:
     cb = Log()
     trainer = cls(model=model, args=args, train_dataset=Rows(train), eval_dataset=Rows(val), data_collator=collate, callbacks=[cb])
     torch.cuda.reset_peak_memory_stats()
-    t_train = time.time()
+    start_eval = {}
+    t_train = time.time()  # the Log callback reads it on every log, the evaluation below included
     with t4_attention() if a.backend == "hf" else contextlib.nullcontext():
+        if a.init_adapter:  # the loaded adapter's val loss on this val set, before any step
+            start_eval = trainer.evaluate()
+            print(f"[{a.data}] val loss of {a.init_adapter} before training: {start_eval.get('eval_loss')}", flush=True)
+        t_train = time.time()
         trainer.train()
         final_eval = trainer.evaluate()
     wall = time.time() - t_train
@@ -216,7 +249,7 @@ def main() -> None:
              "tokens_per_row": sum(x["n_tokens"] for x in train) / len(train), "supervised_per_row": sum(x["n_supervised"] for x in train) / len(train),
              "train_wall_s": round(wall), "gpu_hours": round(wall / 3600, 2), "peak_mem_gb": round(torch.cuda.max_memory_allocated() / 2 ** 30, 2),
              "tokens_per_s": round(cb.tokens / max(cb.busy, 1e-6), 1),
-             "final_val_loss": final_eval.get("eval_loss"), "gpu": torch.cuda.get_device_name(0), "backend": a.backend, "hparams": vars(a) | {"out": str(a.out)}}
+             "start_val_loss": start_eval.get("eval_loss"), "final_val_loss": final_eval.get("eval_loss"), "gpu": torch.cuda.get_device_name(0), "backend": a.backend, "hparams": vars(a) | {"out": str(a.out)}}
     (a.out / "stats.json").write_text(json.dumps(stats, indent=1, default=str), encoding="utf-8")
     print(f"[{a.data}] done: {json.dumps(stats, default=str)}", flush=True)
 

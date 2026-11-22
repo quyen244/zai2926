@@ -1,0 +1,13 @@
+{
+  "id": "tquynlnguyn/lifemate-phowhisper-p2-decode-sweep",
+  "title": "lifemate-phowhisper-p2-decode-sweep",
+  "code_file": "run.py",
+  "language": "python",
+  "kernel_type": "script",
+  "is_private": true,
+  "enable_gpu": true,
+  "enable_internet": true,
+  "dataset_sources": ["tquynlnguyn/lifemate-phowhisper-base", "tquynlnguyn/lifemate-phowhisper-p2-main-adapter"],
+  "competition_sources": [],
+  "kernel_sources": []
+}
