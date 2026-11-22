@@ -171,7 +171,7 @@ never used at inference) or to a local harness smoke-test that is never uploaded
 - Secrets live in `.env` (git-ignored): `OPENAI_API_KEY`, optional `LLM_MODEL` (default `gpt-6-luna`; stay on the luna tier or cheaper), `LLM_RPM`, `LLM_TPM`.
 - LLM prompts are written by the user in `prompts/`; code only reads them. Taxonomy definitions: `taxonomy/taxonomy.json`.
 - Never read `data/**/<split>_environment/` directly; use `lifemate.data.tool_env()` (competition rule).
-- Commits: no co-author line.
+- **Commit completed work:** when an experiment or feature is finished, commit its relevant source, configuration, and aggregate results before moving on. Keep per-sample data, model weights, secrets, and generated artifacts out of commits. Push the commit when the user has requested pushing or the current task is already a commit-and-push task. Never add a co-author line.
 - Running scripts: always smoke-test first (small `--n`), then optimise runtime using real measured numbers (batch size, VAD, compute type, caching). Stay at "just right": one or two measured fixes, no over-engineering or endless tuning.
 
 ## Environment to rebuild on a new server
