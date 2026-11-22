@@ -101,9 +101,12 @@ never used at inference) or to a local harness smoke-test that is never uploaded
 - **App filter = fine-tuned e5 top-7 (2026-11-16, replaces "no app filter" of 2026-11-15).** The filter is
   `quyenuit24/lifemate-embed-train` output (multilingual-e5-small fine-tuned on folds 1-4, listwise InfoNCE over installed
   apps; local copy `work/kaggle/embed_train_q/out/app_embedder_e5`): keep the 7 installed apps closest to the user text,
-  plus `contacts` and `sys`, via `run_sample(keep_apps=...)`. Fold 0 recall 100% gold and ASR, tools 32.7 -> 24.1 per
-  sample. The old BGE-M3 `work/retrieval/app_filter.top5.json` is not used. Scores with and without the filter are not
-  comparable.
+  plus `contacts` and `sys`, via `run_sample(keep_apps=...)`. An earlier fold-0 check recorded 100% sample recall,
+  but this is not guaranteed by top-7. The 2026-11-22 paired 309-sample RAT checkpoint evaluation retained 455/498
+  required gold-app instances (91.37%) and every required app in 244/309 samples; recall depends on the exact query
+  and target definition.
+  Measure it on the evaluation set. The old BGE-M3 `work/retrieval/app_filter.top5.json` is not used. Scores with and
+  without the filter are not comparable.
 
 - **Rollout/eval filter decision (2026-11-21).** From now on, all rollout generation and evaluation use the fine-tuned
   E5 top-7 app filter, plus `contacts` and `sys`, to reduce runtime. Existing RAT tool-only jobs submitted without the

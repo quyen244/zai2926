@@ -17,7 +17,7 @@ The score is the official mean per-sample tool-call F1 with the state-hash match
 
 The ASR input score is 15.2273 points below the gold-input score for this checkpoint.
 
-The fine-tuned E5 top-7 filter retained 455/498 gold apps (91.37%) in both variants, and retained every gold app for 244/309 samples.
+The fine-tuned E5 top-7 filter retained 455/498 required gold-app instances (91.37%) in both variants, and retained every required app for 244/309 samples.
 
 There were 618 successful runs, zero failed runs, and zero samples skipped by the time limit.
 
