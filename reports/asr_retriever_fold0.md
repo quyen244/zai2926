@@ -26,6 +26,6 @@ Oracle WER means the lowest WER among the retrieved gold candidates, chosen usin
 
 It is an upper bound for selecting one candidate from the retrieved set, not the WER of an LLM correction pass.
 
-The correction model has not yet been run with this fine-tuned retriever.
+The follow-up Qwen3-4B + B2 few-shot correction run is complete and worsened WER; details are in `reports/asr_fewshot_correction_fold0.md`.
 
 Files: `work/kaggle/asr_gold_retriever_train/out/metrics.json`, `examples.json`, and `retriever/`.

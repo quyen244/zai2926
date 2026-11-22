@@ -139,12 +139,14 @@ never used at inference) or to a local harness smoke-test that is never uploaded
   Compare char TF-IDF, untrained E5, and trained E5 with top-2/top-3 exact-gold retrieval and oracle candidate WER; this is not downstream correction WER.
   First queued kernel version used an incorrect split, so its private kernel was deleted before execution and recreated with the folds 1-4 train / fold 0 evaluation design.
   Completed: top-2 oracle WER was TF-IDF 63.48%, E5-base 67.40%, fine-tuned E5 65.45%; top-3 was 61.45%, 64.83%, 63.35%.
-  Fine-tuning improved E5 but TF-IDF remains stronger on oracle candidate WER; actual Qwen correction WER is pending.
+  Fine-tuning improved E5 but TF-IDF remains stronger on oracle candidate WER.
   Details: `reports/asr_retriever_fold0.md`; checkpoint stays under `work/kaggle/asr_gold_retriever_train/out/retriever/`.
   On user request, correction job `tquynlnguyn/lifemate-asr-fewshot-correction` was relaunched on Kaggle T4 with the B2 adapter applied to `Qwen/Qwen3-4B`.
   The initial plain `Qwen3-4B-AWQ` run was stopped before inference when the user selected B2.
-  Current run uses the fine-tuned E5 checkpoint, retrieves paired P2 ASR/gold examples from folds 1-4, runs B2 once with top-2 and once with top-3 for each of 1,009 fold-0 clips, and scores both against the same raw P2 baseline (2,076 edits / 14,531 words).
-  No local GPU is used; output is pending.
+  Completed on Kaggle T4 x2: top-2 correction scored 2,724 edits / 14,531 words (18.7461% WER), and top-3 scored 2,771 edits (19.0696%), versus raw P2 at 2,076 edits (14.2867%).
+  Keep raw P2; do not apply this correction pass because both variants materially worsen WER.
+  Version 1 failed before inference because a tokenizer `BatchEncoding` used `.cuda()`; version 2 uses `.to("cuda")` and completed all 2,018 variants.
+  Aggregate result: `reports/asr_fewshot_correction_fold0.md`; individual predictions stay under ignored `work/`.
 
 - **PhoWhisper synthetic-audio finding (2026-11-21).** The audio `train_0127_r1_south` is present in
   `work/kaggle_phowhisper_input/synth1.zip` under `audio_1/` and is training fold 2. Its reverb augmentation has RMS

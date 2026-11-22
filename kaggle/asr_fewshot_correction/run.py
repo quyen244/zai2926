@@ -155,7 +155,7 @@ def main() -> None:
         with torch.inference_mode():
             for start in range(0, len(texts), batch_size):
                 encoded = tokenizer([prefix + text for text in texts[start:start + batch_size]],
-                                    padding=True, truncation=True, max_length=128, return_tensors="pt").cuda()
+                                    padding=True, truncation=True, max_length=128, return_tensors="pt").to("cuda")
                 with torch.autocast("cuda", dtype=torch.float16):
                     hidden = retriever(**encoded).last_hidden_state
                     mask = encoded["attention_mask"].unsqueeze(-1)
