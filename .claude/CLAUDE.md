@@ -124,6 +124,8 @@ never used at inference) or to a local harness smoke-test that is never uploaded
   Private dataset `tquynlnguyn/lifemate-rat-gold-para-top7-data` and Kaggle T4 job `tquynlnguyn/lifemate-rat-gold-para-top7-train` were pushed.
   Version 2 uses the B2 adapter from `tquynlnguyn/lifemate-b2-train` as initialization, per the user's correction while version 1 was still QUEUED.
   It uses one epoch at learning rate 5e-5 and writes a separate adapter under `out/traj_rat_gold_para_top7/`.
+  Training completed on 2026-11-22: all 2,690 rows, 337/337 steps, 6.58 T4 GPU hours, validation loss 1.0277 -> 0.2912, no time-limit stop.
+  This is training loss only; evaluate the new checkpoint against the existing RAT on the same fold-0 examples with ASR and gold text, top-7 filter, and identical decoding before deciding whether to add ASR-robustness data.
   Its input rows contain only gold and gold paraphrases; the B2 initialization has its own earlier training history.
 
 - **PhoWhisper P2 decode decision (2026-11-22).** Keep beam 5 without a name prompt as the selected decoder.
