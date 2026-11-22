@@ -1,0 +1,15 @@
+{
+  "id": "tquynlnguyn/lifemate-rat-gold-checkpoint-eval",
+  "title": "lifemate-rat-gold-checkpoint-eval",
+  "code_file": "run.py",
+  "language": "python",
+  "kernel_type": "script",
+  "is_private": true,
+  "enable_gpu": true,
+  "enable_internet": true,
+  "dataset_sources": [
+    "tquynlnguyn/lifemate-rat-gold-checkpoint-eval-input-v2"
+  ],
+  "competition_sources": [],
+  "kernel_sources": []
+}

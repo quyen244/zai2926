@@ -128,6 +128,13 @@ never used at inference) or to a local harness smoke-test that is never uploaded
   This is training loss only; evaluate the new checkpoint against the existing RAT on the same fold-0 examples with ASR and gold text, top-7 filter, and identical decoding before deciding whether to add ASR-robustness data.
   Its input rows contain only gold and gold paraphrases; the B2 initialization has its own earlier training history.
 
+- **RAT gold + paraphrase checkpoint evaluation (2026-11-22).** Evaluate only the new checkpoint on fold 0 with paired gold and PhoWhisper P2 text, top-7 filter, `normalise=False`, six-step cap, and the same decoding.
+  Kaggle job `tquynlnguyn/lifemate-rat-gold-checkpoint-eval` version 2 completed on two GPUs with 618/618 successful runs.
+  It scored 58.5437 on gold text and 43.3164 on P2 text, a 15.2273-point gap.
+  The top-7 filter retained 455/498 gold apps (91.37%) and retained all gold apps for 244/309 samples.
+  This single-checkpoint run does not show whether the new checkpoint improves over the previous RAT checkpoint.
+  Aggregate results: `reports/rat_gold_checkpoint_fold0.md`; detailed outputs stay in ignored `work/`.
+
 - **PhoWhisper P2 decode decision (2026-11-22).** Keep beam 5 without a name prompt as the selected decoder.
   On 1,009 held-out clips, the same P2 adapter scored 14.2867% WER with beam 5, 14.3693% with beam 8, and 15.3465% with a train-only name prompt.
   Gold argument recall was 71/98 for beam 5 and beam 8, and 67/98 for the prompt.
